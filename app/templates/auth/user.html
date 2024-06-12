@@ -66,7 +66,7 @@
         aria-hidden="true"
       >
         <div class="modal-dialog">
-          <div class="modal-content">
+            <div class="modal-content">
             <form
               method="POST"
               action="{{ url_for('auth_user_bp.edit_user', user_id=user.id) }}"
@@ -105,17 +105,14 @@
                 </div>
                 <div class="form-group mb-3">
                   <label for="company{{ user.id }}">Company</label>
-                  <select
-                    class="form-control"
+                  <input
+                    type="company{{ user.id }}"
+                    class="form-control disabled"
                     id="company{{ user.id }}"
                     name="company_id"
-                  >
-                    {% for customer in children_2 %}
-                    <option value="{{ customer.id }}" {% if customer.id == user.company_id %}selected{% endif %}>
-                      {{ customer.name }}
-                    </option>
-                    {% endfor %}
-                  </select>
+                    value="{{ user.company_id }}"
+                    readonly
+                  />
                 </div>
                 <div class="form-group mb-3">
                   <label for="permission{{ user.id }}">Role</label>
@@ -124,8 +121,6 @@
                     id="permission{{ user.id }}"
                     name="permission"
                   >
-                    <option value="0" {% if user.permission == 0 %}selected{% endif %}>System</option>
-                    <option value="1" {% if user.permission == 1 %}selected{% endif %}>Admin</option>
                     <option value="2" {% if user.permission == 2 %}selected{% endif %}>Operator</option>
                     <option value="3" {% if user.permission == 3 %}selected{% endif %}>Office</option>
                     <option value="4" {% if user.permission == 4 %}selected{% endif %}>Trucker</option>
@@ -179,7 +174,7 @@
                 class="btn btn-danger"
                 >Delete</a
               >
-              <button
+                <button
                 type="button"
                 class="btn btn-secondary"
                 data-bs-dismiss="modal"
@@ -197,11 +192,11 @@
 
   <!-- Add User Modal -->
   <div
-    class="modal fade"
-    id="addUserModal"
-    tabindex="-1"
-    aria-labelledby="addUserModalLabel"
-    aria-hidden="true"
+  class="modal fade"
+  id="addUserModal"
+  tabindex="-1"
+  aria-labelledby="addUserModalLabel"
+  aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
@@ -235,6 +230,21 @@
               />
             </div>
             <div class="form-group mb-3">
+              <label for="company">Company</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="company" 
+                name="company_name" 
+                value="{% for customer in children_2 %}{{ customer.name }}{% endfor %}" 
+                readonly>
+              <!-- Add hidden input for company_id -->
+              <input 
+                type="hidden" 
+                name="company_id" 
+                value="{% for customer in children_2 %}{{ customer.id }}{% endfor %}">
+            </div>
+            <div class="form-group mb-3">
               <label for="permission">Role</label>
               <select
                 class="form-control"
@@ -253,6 +263,7 @@
                 class="form-control"
                 id="password"
                 name="password"
+                required
               />
             </div>
           </div>
@@ -270,6 +281,8 @@
       </div>
     </div>
   </div>
+  
+
 </div>
 
 <script>

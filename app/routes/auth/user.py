@@ -15,7 +15,7 @@ def index():
         return redirect(url_for('main.home'))
 
     children_1 = User.query.filter(User.permission > 1, current_user.company_id == User.company_id).all()
-    children_2 = Customer.query.filter(Customer.deleted_at == None, Customer.status == 'active').all()
+    children_2 = Customer.query.filter(Customer.id == current_user.company_id)
     
     # Create a dictionary to map company_id to company.name
     company_map = {customer.id: customer.name for customer in children_2}
@@ -23,37 +23,54 @@ def index():
     return render_template('auth/user.html', current_user=current_user, children_1=children_1, children_2=children_2, company_map=company_map)
 
 
-# auth add user modal
-@auth_user_bp.route('/add_user_modal', methods=['POST'])
+# auth add user
+@auth_user_bp.route('/auth/add_user_modal', methods=['POST'])
 @login_required
 def add_user_modal():
-    if current_user.permission not in [0, 1]:
+    # Check if the current user has permission to add a new user
+    if current_user.permission != 1:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    username = request.form['username']
-    email = request.form['email']
-    permission = request.form['permission']
-    password = request.form['password']
+    # Retrieve form data
+    username = request.form.get('username')
+    email = request.form.get('email')
+    company_id = request.form.get('company_id')
+    permission = request.form.get('permission')
+    password = request.form.get('password')
 
-    if not username or not email or not permission or not password:
+    # Validate form data
+    if not all([username, email, permission, password]):
         flash('All fields are required.')
+        return redirect(url_for('auth_user_bp.index'))
+
+    # Check if the email is unique
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        flash('Email is already in use.')
         return redirect(url_for('auth_user_bp.index'))
 
     # Generate password hash using bcrypt
     password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
     
+    # Create a new user object
     new_user = User(
         username=username,
         email=email,
+        company_id=company_id,
         permission=permission,
         password_hash=password_hash
     )
+
+    # Add the new user to the database
     db.session.add(new_user)
     db.session.commit()
+
     flash('User successfully added!')
     return redirect(url_for('auth_user_bp.index'))
 
+
+# auth edit user
 @auth_user_bp.route('/edit_user/<int:user_id>', methods=['POST'])
 @login_required
 def edit_user(user_id):
