@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="form-signin d-flex align-items-center justify-content-center" style="height: 100vh;">
+  <div class="card shadow-sm p-4" style="width: 100%; max-width: 400px;">
+    <form method="post" action="{{ url_for('authentication.login') }}">
+      <h1 class="h3 mb-3 fw-normal text-center">Sign In</h1>
+      {{ form.hidden_tag() }}
+      <div class="form-floating mb-3">
+        {{ form.email(class="form-control", placeholder="Email") }}
+        <label for="email">Email</label>
+      </div>
+      <div class="form-floating mb-3">
+        {{ form.password(class="form-control", placeholder="Password") }}
+        <label for="password">Password</label>
+      </div>
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary btn-lg" type="submit">Sign in</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+{% endblock %}

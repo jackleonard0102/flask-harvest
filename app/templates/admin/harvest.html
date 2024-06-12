@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Harvests</h2>
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <input
+      type="text"
+      class="form-control w-50"
+      id="searchBox"
+      placeholder="Search harvests..."
+    />
+    <button
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#addHarvestModal"
+    >
+      Add Harvest
+    </button>
+  </div>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">No</th>
+        <th class="text-center">Farm</th>
+        <th class="text-center">Harvest Name</th>
+        <th class="text-center">Date</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="harvestTableBody">
+      {% for harvest in children_1 %}
+      <tr>
+        <td class="text-center align-middle">{{ loop.index }}</td>
+        <td class="text-center align-middle">{{ farm_map[harvest.farm_id] }}</td>
+        <td class="text-center align-middle">{{ harvest.name }}</td>
+        <td class="text-center align-middle">{{ harvest.date.strftime('%Y-%m-%d') }}</td>
+        <td class="text-center align-middle">
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#editHarvestModal{{ harvest.id }}"
+          >
+            <i class="bi bi-pencil-square text-primary fs-4"></i>
+          </button>
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteHarvestModal{{ harvest.id }}"
+          >
+            <i class="bi bi-trash text-danger fs-4"></i>
+          </button>
+        </td>
+      </tr>
+
+      <!-- Edit Harvest Modal -->
+      <div
+        class="modal fade"
+        id="editHarvestModal{{ harvest.id }}"
+        tabindex="-1"
+        aria-labelledby="editHarvestModalLabel{{ harvest.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form
+              method="POST"
+              action="{{ url_for('admin_harvest_bp.edit_harvest', harvest_id=harvest.id) }}"
+            >
+              <div class="modal-header">
+                <h5 class="modal-title" id="editHarvestModalLabel{{ harvest.id }}">
+                  Edit Harvest
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group mb-3">
+                  <label for="name{{ harvest.id }}">Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name{{ harvest.id }}"
+                    name="name"
+                    value="{{ harvest.name }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="date{{ harvest.id }}">Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="date{{ harvest.id }}"
+                    name="date"
+                    value="{{ harvest.date.strftime('%Y-%m-%d') }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="farm{{ harvest.id }}">Farm</label>
+                  <select
+                    class="form-control"
+                    id="farm{{ harvest.id }}"
+                    name="farm_id" required
+                  >
+                    {% for farm in children_2 %}
+                    <option value="{{ farm.id }}" {% if farm.id == harvest.farm_id %}selected{% endif %}>
+                      {{ farm.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                  Update
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Harvest Modal -->
+      <div
+        class="modal fade"
+        id="deleteHarvestModal{{ harvest.id }}"
+        tabindex="-1"
+        aria-labelledby="deleteHarvestModalLabel{{ harvest.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteHarvestModalLabel{{ harvest.id }}">
+                Confirm Delete
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete harvest {{ harvest.name }}?
+            </div>
+            <div class="modal-footer">
+              <a
+                href="{{ url_for('admin_harvest_bp.delete_harvest', harvest_id=harvest.id) }}"
+                class="btn btn-danger"
+              >Delete</a>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Add Harvest Modal -->
+  <div
+    class="modal fade"
+    id="addHarvestModal"
+    tabindex="-1"
+    aria-labelledby="addHarvestModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST" action="{{ url_for('admin_harvest_bp.add_harvest_modal') }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addHarvestModalLabel">Add New Harvest</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group mb-3">
+              <label for="farm">Farm</label>
+              <select
+                class="form-control"
+                id="farm"
+                name="farm_id"
+              >
+                {% for farm in children_2 %}
+                <option value="{{ farm.id }}">{{ farm.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="name">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="date">Date</label>
+              <input
+                type="date"
+                class="form-control"
+                id="date"
+                name="date" required
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("searchBox").addEventListener("input", function () {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#harvestTableBody tr");
+    rows.forEach((row) => {
+      const cells = row.querySelectorAll("td");
+      const match = Array.from(cells).some((cell) =>
+        cell.innerText.toLowerCase().includes(searchValue)
+      );
+      row.style.display = match ? "" : "none";
+    });
+  });
+</script>
+{% endblock %}

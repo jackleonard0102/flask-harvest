@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>User</h2>
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <input
+      type="text"
+      class="form-control w-50"
+      id="searchBox"
+      placeholder="Search users..."
+    />
+    <button
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#addUserModal"
+    >
+      Add User
+    </button>
+  </div>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">No</th>
+        <th class="text-center">Username</th>
+        <th class="text-center">Email</th>
+        <th class="text-center">Role</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userTableBody">
+      {% for user in children_1 %}
+      <tr>
+        <td class="text-center align-middle">{{ loop.index }}</td>
+        <td class="text-center align-middle">{{ user.username }}</td>
+        <td class="text-center align-middle">{{ user.email }}</td>
+        <td class="text-center align-middle">
+          {% if user.permission == 2 %}Operator{% elif user.permission == 3 %}Office{% elif user.permission == 4 %}Trucker{% endif %}
+        </td>
+        <td class="text-center align-middle">
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#editUserModal{{ user.id }}"
+          >
+            <i class="bi bi-pencil-square text-primary fs-4"></i>
+          </button>
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteUserModal{{ user.id }}"
+          >
+            <i class="bi bi-trash text-danger fs-4"></i>
+          </button>
+        </td>
+      </tr>
+
+      <!-- Edit User Modal -->
+      <div
+        class="modal fade"
+        id="editUserModal{{ user.id }}"
+        tabindex="-1"
+        aria-labelledby="editUserModalLabel{{ user.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form
+              method="POST"
+              action="{{ url_for('auth_user_bp.edit_user', user_id=user.id) }}"
+            >
+              <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel{{ user.id }}">
+                  Edit User
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group mb-3">
+                  <label for="username{{ user.id }}">Username</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="username{{ user.id }}"
+                    name="username"
+                    value="{{ user.username }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="email{{ user.id }}">Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email{{ user.id }}"
+                    name="email"
+                    value="{{ user.email }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="company{{ user.id }}">Company</label>
+                  <select
+                    class="form-control"
+                    id="company{{ user.id }}"
+                    name="company_id"
+                  >
+                    {% for customer in children_2 %}
+                    <option value="{{ customer.id }}" {% if customer.id == user.company_id %}selected{% endif %}>
+                      {{ customer.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="permission{{ user.id }}">Role</label>
+                  <select
+                    class="form-control"
+                    id="permission{{ user.id }}"
+                    name="permission"
+                  >
+                    <option value="0" {% if user.permission == 0 %}selected{% endif %}>System</option>
+                    <option value="1" {% if user.permission == 1 %}selected{% endif %}>Admin</option>
+                    <option value="2" {% if user.permission == 2 %}selected{% endif %}>Operator</option>
+                    <option value="3" {% if user.permission == 3 %}selected{% endif %}>Office</option>
+                    <option value="4" {% if user.permission == 4 %}selected{% endif %}>Trucker</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                  Update
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete User Modal -->
+      <div
+        class="modal fade"
+        id="deleteUserModal{{ user.id }}"
+        tabindex="-1"
+        aria-labelledby="deleteUserModalLabel{{ user.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteUserModalLabel{{ user.id }}">
+                Confirm Delete
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete user {{ user.username }}?
+            </div>
+            <div class="modal-footer">
+              <a
+                href="{{ url_for('auth_user_bp.delete_user', user_id=user.id) }}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Add User Modal -->
+  <div
+    class="modal fade"
+    id="addUserModal"
+    tabindex="-1"
+    aria-labelledby="addUserModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST" action="{{ url_for('auth_user_bp.add_user_modal') }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group mb-3">
+              <label for="username">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="permission">Role</label>
+              <select
+                class="form-control"
+                id="permission"
+                name="permission"
+              >
+                <option value="2">Operator</option>
+                <option value="3">Office</option>
+                <option value="4">Trucker</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("searchBox").addEventListener("input", function () {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#userTableBody tr");
+    rows.forEach((row) => {
+      const cells = row.querySelectorAll("td");
+      const match = Array.from(cells).some((cell) =>
+        cell.innerText.toLowerCase().includes(searchValue)
+      );
+      row.style.display = match ? "" : "none";
+    });
+  });
+</script>
+{% endblock %}

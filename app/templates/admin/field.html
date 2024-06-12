@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>Fields</h2>
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <input
+      type="text"
+      class="form-control w-50"
+      id="searchBox"
+      placeholder="Search fields..."
+    />
+    <button
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#addFieldModal"
+    >
+      Add Field
+    </button>
+  </div>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">No</th>
+        <th class="text-center">Farm</th>
+        <th class="text-center">Fieldname</th>
+        <th class="text-center">Acreage</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="fieldTableBody">
+      {% for field in children_1 %}
+      <tr>
+        <td class="text-center align-middle">{{ loop.index }}</td>
+        <td class="text-center align-middle">{{ farm_map[field.farm_id] }}</td>
+        <td class="text-center align-middle">{{ field.name }}</td>
+        <td class="text-center align-middle">{{ field.acreage }}</td>
+        <td class="text-center align-middle">
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#editFieldModal{{ field.id }}"
+          >
+            <i class="bi bi-pencil-square text-primary fs-4"></i>
+          </button>
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteFieldModal{{ field.id }}"
+          >
+            <i class="bi bi-trash text-danger fs-4"></i>
+          </button>
+        </td>
+      </tr>
+
+      <!-- Edit Field Modal -->
+<div class="modal fade" id="editFieldModal{{ field.id }}" tabindex="-1" aria-labelledby="editFieldModalLabel{{ field.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <form method="POST" action="{{ url_for('admin_field_bp.edit_field', field_id=field.id) }}">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="editFieldModalLabel{{ field.id }}">Edit Field</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group mb-3">
+                      <label for="name{{ field.id }}">Name</label>
+                      <input type="text" class="form-control" id="name{{ field.id }}" name="name" value="{{ field.name }}" required />
+                  </div>
+                  <div class="form-group mb-3">
+                      <label for="acreage{{ field.id }}">Acreage</label>
+                      <input type="text" class="form-control" id="acreage{{ field.id }}" name="acreage" value="{{ field.acreage }}" required />
+                  </div>
+                  <div class="form-group mb-3">
+                      <label for="farm{{ field.id }}">Farm</label>
+                      <select class="form-control" id="farm{{ field.id }}" name="farm_id" required>
+                          {% for farm in children_2 %}
+                          <option value="{{ farm.id }}" {% if farm.id == field.farm_id %}selected{% endif %}>
+                              {{ farm.name }}
+                          </option>
+                          {% endfor %}
+                      </select>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Update</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+      <!-- Delete Field Modal -->
+      <div
+        class="modal fade"
+        id="deleteFieldModal{{ field.id }}"
+        tabindex="-1"
+        aria-labelledby="deleteFieldModalLabel{{ field.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteFieldModalLabel{{ field.id }}">
+                Confirm Delete
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete field {{ field.name }}?
+            </div>
+            <div class="modal-footer">
+              <a
+                href="{{ url_for('admin_field_bp.delete_field', field_id=field.id) }}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Add Field Modal -->
+<div class="modal fade" id="addFieldModal" tabindex="-1" aria-labelledby="addFieldModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <form method="POST" action="{{ url_for('admin_field_bp.add_field_modal') }}">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addFieldModalLabel">Add New Field</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group mb-3">
+                      <label for="farm">Farm</label>
+                      <select class="form-control" id="farm" name="farm_id" required>
+                          {% for farm in children_2 %}
+                          <option value="{{ farm.id }}">{{ farm.name }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+                  <div class="form-group mb-3">
+                      <label for="name">Name</label>
+                      <input type="text" class="form-control" id="name" name="name" required />
+                  </div>
+                  <div class="form-group mb-3">
+                      <label for="acreage">Acreage</label>
+                      <input type="text" class="form-control" id="acreage" name="acreage" required />
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Create</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+</div>
+
+<script>
+  document.getElementById("searchBox").addEventListener("input", function () {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#fieldTableBody tr");
+    rows.forEach((row) => {
+      const cells = row.querySelectorAll("td");
+      const match = Array.from(cells).some((cell) =>
+        cell.innerText.toLowerCase().includes(searchValue)
+      );
+      row.style.display = match ? "" : "none";
+    });
+  });
+</script>
+{% endblock %}
