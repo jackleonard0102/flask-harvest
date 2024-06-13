@@ -24,7 +24,7 @@ def index():
 @admin_user_bp.route('/add_user_modal', methods=['POST'])
 @login_required
 def add_user_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -57,7 +57,7 @@ def add_user_modal():
 @login_required
 def edit_user(user_id):
     user = User.query.get_or_404(user_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can edit users
+    if current_user.permission != 0:  # Only superadmin or admin can edit users
         flash('Unauthorized access')
         return redirect(url_for('admin_user_bp.index'))
 
@@ -83,7 +83,7 @@ def edit_user(user_id):
 @login_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can delete users
+    if current_user.permission != 0:  # Only superadmin or admin can delete users
         flash('Unauthorized access')
         return redirect(url_for('admin_user_bp.index'))  # Update the URL endpoint to 'admin_user_bp.index'
 

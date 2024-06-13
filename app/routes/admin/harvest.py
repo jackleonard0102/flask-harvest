@@ -9,7 +9,7 @@ admin_harvest_bp = Blueprint('admin_harvest_bp', __name__)
 @admin_harvest_bp.route('/admin/harvest')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superadmin and admin
+    if current_user.permission != 0:  # Suppose 0 and 1 are permissions for superadmin and admin
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -24,7 +24,7 @@ def index():
 @admin_harvest_bp.route('/add_harvest_modal', methods=['POST'])
 @login_required
 def add_harvest_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -52,7 +52,7 @@ def add_harvest_modal():
 @login_required
 def edit_harvest(harvest_id):
     harvest = Harvest.query.get_or_404(harvest_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can edit harvests
+    if current_user.permission != 0:  # Only superadmin or admin can edit harvests
         flash('Unauthorized access')
         return redirect(url_for('admin_harvest_bp.index'))
 
@@ -77,7 +77,7 @@ def edit_harvest(harvest_id):
 @login_required
 def delete_harvest(harvest_id):
     harvest = Harvest.query.get_or_404(harvest_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can delete harvests
+    if current_user.permission != 0:  # Only superadmin or admin can delete harvests
         flash('Unauthorized access')
         return redirect(url_for('admin_harvest_bp.index'))
 

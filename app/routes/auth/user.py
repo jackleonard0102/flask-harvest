@@ -75,7 +75,7 @@ def add_user_modal():
 @login_required
 def edit_user(user_id):
     user = User.query.get_or_404(user_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can edit users
+    if current_user.permission != 1:  # Only superadmin or admin can edit users
         flash('Unauthorized access')
         return redirect(url_for('auth_user_bp.index'))
 
@@ -101,7 +101,7 @@ def edit_user(user_id):
 @login_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can delete users
+    if current_user.permission != 1:  # Only superadmin or admin can delete users
         flash('Unauthorized access')
         return redirect(url_for('auth_user_bp.index'))  # Update the URL endpoint to 'auth_user_bp.index'
 

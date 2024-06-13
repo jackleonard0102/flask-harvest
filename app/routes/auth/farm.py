@@ -9,7 +9,7 @@ admin_farm_bp = Blueprint('admin_farm_bp', __name__)
 @admin_farm_bp.route('/admin/farm')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Assuming 0 and 1 are permissions for superadmin and admin
+    if current_user.permission != 1:  # Assuming 0 and 1 are permissions for superadmin and admin
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 

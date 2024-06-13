@@ -8,7 +8,7 @@ admin_harvest_per_field_bp = Blueprint('admin_harvest_per_field_bp', __name__)
 @admin_harvest_per_field_bp.route('/admin/harvest_per_field')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superadmin and admin
+    if current_user.permission != 0:  # Suppose 0 and 1 are permissions for superadmin and admin
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -25,7 +25,7 @@ def index():
 @admin_harvest_per_field_bp.route('/add_harvest_per_field_modal', methods=['POST'])
 @login_required
 def add_harvest_per_field_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -53,7 +53,7 @@ def add_harvest_per_field_modal():
 @login_required
 def edit_harvest_per_field(harvest_per_field_id):
     harvest_per_field = HarvestPerField.query.get_or_404(harvest_per_field_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can edit harvest per fields
+    if current_user.permission != 0:  # Only superadmin or admin can edit harvest per fields
         flash('Unauthorized access')
         return redirect(url_for('admin_harvest_per_field_bp.index'))
 
@@ -78,7 +78,7 @@ def edit_harvest_per_field(harvest_per_field_id):
 @login_required
 def delete_harvest_per_field(harvest_per_field_id):
     harvest_per_field = HarvestPerField.query.get_or_404(harvest_per_field_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can delete harvest per fields
+    if current_user.permission != 0:  # Only superadmin or admin can delete harvest per fields
         flash('Unauthorized access')
         return redirect(url_for('admin_harvest_per_field_bp.index'))
 

@@ -18,7 +18,7 @@ admin_company_bp = Blueprint('company', __name__, url_prefix='/admin/company')
 @admin_company_bp.route('/')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access', 'danger')
         return redirect(url_for('authentication.login'))
     children = Customer.query.filter(Customer.deleted_at == None).all()
@@ -28,7 +28,7 @@ def index():
 @admin_company_bp.route('/add', methods=['POST'])
 @login_required
 def add_company():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access', 'danger')
         return redirect(url_for('authentication.login'))
 
@@ -55,7 +55,7 @@ def add_company():
 @admin_company_bp.route('/edit/<int:company_id>', methods=['POST'])
 @login_required
 def edit_company(company_id):
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access', 'danger')
         return redirect(url_for('authentication.login'))
 
@@ -85,7 +85,7 @@ def edit_company(company_id):
 @admin_company_bp.route('/delete/<int:company_id>')
 @login_required
 def delete_company(company_id):
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access', 'danger')
         return redirect(url_for('authentication.login'))
 

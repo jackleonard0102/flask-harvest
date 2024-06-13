@@ -9,7 +9,7 @@ admin_farm_bp = Blueprint('admin_farm_bp', __name__)
 @admin_farm_bp.route('/admin/farm')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Assuming 0 and 1 are permissions for superadmin and admin
+    if current_user.permission != 0:  # Assuming 0 and 1 are permissions for superadmin and admin
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -24,7 +24,7 @@ def index():
 @admin_farm_bp.route('/add_farm_modal', methods=['POST'])
 @login_required
 def add_farm_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -53,7 +53,7 @@ def add_farm_modal():
 @login_required
 def edit_farm(farm_id):
     farm = Farm.query.get_or_404(farm_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can edit farms
+    if current_user.permission != 0:  # Only superadmin or admin can edit farms
         flash('Unauthorized access')
         return redirect(url_for('admin_farm_bp.index'))
 
@@ -79,7 +79,7 @@ def edit_farm(farm_id):
 @login_required
 def delete_farm(farm_id):
     farm = Farm.query.get_or_404(farm_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can delete farms
+    if current_user.permission != 0:  # Only superadmin or admin can delete farms
         flash('Unauthorized access')
         return redirect(url_for('admin_farm_bp.index'))  # Update the URL endpoint to 'admin_farm_bp.index'
 

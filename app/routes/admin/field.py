@@ -9,7 +9,7 @@ admin_field_bp = Blueprint('admin_field_bp', __name__)
 @admin_field_bp.route('/admin/field')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superadmin and admin
+    if current_user.permission != 0:  # Suppose 0 and 1 are permissions for superadmin and admin
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -24,7 +24,7 @@ def index():
 @admin_field_bp.route('/add_field_modal', methods=['POST'])
 @login_required
 def add_field_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 0:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -52,7 +52,7 @@ def add_field_modal():
 @login_required
 def edit_field(field_id):
     field = FarmField.query.get_or_404(field_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can edit fields
+    if current_user.permission != 0:  # Only superadmin or admin can edit fields
         flash('Unauthorized access')
         return redirect(url_for('admin_field_bp.index'))
 
@@ -79,7 +79,7 @@ def edit_field(field_id):
 @login_required
 def delete_field(field_id):
     field = FarmField.query.get_or_404(field_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can delete fields
+    if current_user.permission != 0:  # Only superadmin or admin can delete fields
         flash('Unauthorized access')
         return redirect(url_for('admin_field_bp.index'))  # Update the URL endpoint to 'admin_field_bp.index'
 
