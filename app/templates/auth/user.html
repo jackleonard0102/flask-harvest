@@ -104,15 +104,19 @@
                   />
                 </div>
                 <div class="form-group mb-3">
-                  <label for="company{{ user.id }}">Company</label>
-                  <input
-                    type="company{{ user.id }}"
-                    class="form-control disabled"
-                    id="company{{ user.id }}"
-                    name="company_id"
-                    value="{{ user.company_id }}"
-                    readonly
-                  />
+                  <label for="company">Company</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="company" 
+                    name="company_name" 
+                    value="{% for customer in children_2 %}{{ customer.name }}{% endfor %}" 
+                    readonly>
+                  <!-- Add hidden input for company_id -->
+                  <input 
+                    type="hidden" 
+                    name="company_id" 
+                    value="{% for customer in children_2 %}{{ customer.id }}{% endfor %}">
                 </div>
                 <div class="form-group mb-3">
                   <label for="permission{{ user.id }}">Role</label>

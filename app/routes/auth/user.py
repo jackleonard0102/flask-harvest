@@ -71,11 +71,11 @@ def add_user_modal():
 
 
 # auth edit user
-@auth_user_bp.route('/edit_user/<int:user_id>', methods=['POST'])
+@auth_user_bp.route('/auth/edit_user/<int:user_id>', methods=['POST'])
 @login_required
 def edit_user(user_id):
     user = User.query.get_or_404(user_id)
-    if current_user.permission != 1:  # Only superadmin or admin can edit users
+    if current_user.permission != 1:  
         flash('Unauthorized access')
         return redirect(url_for('auth_user_bp.index'))
 
@@ -97,11 +97,11 @@ def edit_user(user_id):
     flash('User successfully updated!')
     return redirect(url_for('auth_user_bp.index'))
 
-@auth_user_bp.route('/delete_user/<int:user_id>')
+@auth_user_bp.route('/auth/delete_user/<int:user_id>')
 @login_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
-    if current_user.permission != 1:  # Only superadmin or admin can delete users
+    if current_user.permission != 1:  
         flash('Unauthorized access')
         return redirect(url_for('auth_user_bp.index'))  # Update the URL endpoint to 'auth_user_bp.index'
 
