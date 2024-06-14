@@ -49,12 +49,13 @@
       }
       .content {
         padding: 20px;
+        margin-top: 70px; /* Add this to avoid content being hidden behind the fixed navbar */
       }
     </style>
   </head>
   <body>
     {% if current_user.is_authenticated %}
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg fixed-top">
       <div class="container-fluid d-flex justify-content-around">
         {% if current_user.permission == 0 %}
         <!-- Superadmin Navbar -->
