@@ -4,12 +4,12 @@ from app.models import FarmField, Farm
 from app.extensions import db, bcrypt
 
 
-admin_field_bp = Blueprint('admin_field_bp', __name__)
+auth_field_bp = Blueprint('auth_field_bp', __name__)
 
-@admin_field_bp.route('/admin/field')
+@auth_field_bp.route('/auth/field')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superadmin and admin
+    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superauth and auth
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -19,9 +19,9 @@ def index():
     # Create a dictionary to map farm_id to farm.name
     farm_map = {farm.id: farm.name for farm in children_2}
     
-    return render_template('admin/field.html', current_user=current_user, children_1=children_1, farm_map=farm_map, children_2=children_2)
+    return render_template('auth/field.html', current_user=current_user, children_1=children_1, farm_map=farm_map, children_2=children_2)
 
-@admin_field_bp.route('/add_field_modal', methods=['POST'])
+@auth_field_bp.route('/add_field_modal', methods=['POST'])
 @login_required
 def add_field_modal():
     if current_user.permission not in [0, 1]:
@@ -35,7 +35,7 @@ def add_field_modal():
     # Validate inputs
     if not name or not acreage or not farm_id:
         flash('All fields are required.')
-        return redirect(url_for('admin_field_bp.index'))
+        return redirect(url_for('auth_field_bp.index'))
 
     new_field = FarmField(
         name=name,
@@ -45,16 +45,16 @@ def add_field_modal():
     db.session.add(new_field)
     db.session.commit()
     flash('Field successfully added!')
-    return redirect(url_for('admin_field_bp.index'))
+    return redirect(url_for('auth_field_bp.index'))
 
 
-@admin_field_bp.route('/edit_field/<int:field_id>', methods=['POST'])
+@auth_field_bp.route('/edit_field/<int:field_id>', methods=['POST'])
 @login_required
 def edit_field(field_id):
     field = FarmField.query.get_or_404(field_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can edit fields
+    if current_user.permission not in [0, 1]:  # Only superauth or auth can edit fields
         flash('Unauthorized access')
-        return redirect(url_for('admin_field_bp.index'))
+        return redirect(url_for('auth_field_bp.index'))
 
     name = request.form['name']
     acreage = request.form['acreage']
@@ -63,7 +63,7 @@ def edit_field(field_id):
     # Validate inputs
     if not name or not acreage or not farm_id:
         flash('All fields are required.')
-        return redirect(url_for('admin_field_bp.index'))
+        return redirect(url_for('auth_field_bp.index'))
 
     field.name = name
     field.acreage = acreage
@@ -71,19 +71,19 @@ def edit_field(field_id):
 
     db.session.commit()
     flash('Field successfully updated!')
-    return redirect(url_for('admin_field_bp.index'))
+    return redirect(url_for('auth_field_bp.index'))
 
 
 
-@admin_field_bp.route('/delete_field/<int:field_id>')
+@auth_field_bp.route('/delete_field/<int:field_id>')
 @login_required
 def delete_field(field_id):
     field = FarmField.query.get_or_404(field_id)
-    if current_user.permission not in [0, 1]:  # Only superadmin or admin can delete fields
+    if current_user.permission not in [0, 1]:  # Only superauth or auth can delete fields
         flash('Unauthorized access')
-        return redirect(url_for('admin_field_bp.index'))  # Update the URL endpoint to 'admin_field_bp.index'
+        return redirect(url_for('auth_field_bp.index'))  # Update the URL endpoint to 'auth_field_bp.index'
 
     db.session.delete(field)
     db.session.commit()
     flash('field successfully deleted!')
-    return redirect(url_for('admin_field_bp.index'))  # Update the URL endpoint to 'admin_field_bp.index'
+    return redirect(url_for('auth_field_bp.index'))  # Update the URL endpoint to 'auth_field_bp.index'

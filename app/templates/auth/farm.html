@@ -67,7 +67,7 @@
           <div class="modal-content">
             <form
               method="POST"
-              action="{{ url_for('admin_farm_bp.edit_farm', farm_id=farm.id) }}"
+              action="{{ url_for('auth_farm_bp.edit_farm', farm_id=farm.id) }}"
             >
               <div class="modal-header">
                 <h5 class="modal-title" id="editFarmModalLabel{{ farm.id }}">
@@ -102,18 +102,19 @@
                   />
                 </div>
                 <div class="form-group mb-3">
-                  <label for="company{{ farm.id }}">Company</label>
-                  <select
-                    class="form-control"
-                    id="company{{ farm.id }}"
-                    name="company_id"
-                  >
-                    {% for customer in children_2 %}
-                    <option value="{{ customer.id }}" {% if customer.id == farm.company_id %}selected{% endif %}>
-                      {{ customer.name }}
-                    </option>
-                    {% endfor %}
-                  </select>
+                  <label for="company">Company</label>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="company" 
+                    name="company_name" 
+                    value="{% for customer in children_2 %}{{ customer.name }}{% endfor %}" 
+                    readonly>
+                  <!-- Add hidden input for company_id -->
+                  <input 
+                    type="hidden" 
+                    name="company_id" 
+                    value="{% for customer in children_2 %}{{ customer.id }}{% endfor %}">
                 </div>
                 <div class="form-group mb-3">
                   <label for="address{{ farm.id }}">Adress</label>
@@ -169,7 +170,7 @@
             </div>
             <div class="modal-footer">
               <a
-                href="{{ url_for('admin_farm_bp.delete_farm', farm_id=farm.id) }}"
+                href="{{ url_for('auth_farm_bp.delete_farm', farm_id=farm.id) }}"
                 class="btn btn-danger"
                 >Delete</a
               >
@@ -199,7 +200,7 @@
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <form method="POST" action="{{ url_for('admin_farm_bp.add_farm_modal') }}">
+        <form method="POST" action="{{ url_for('auth_farm_bp.add_farm_modal') }}">
           <div class="modal-header">
             <h5 class="modal-title" id="addFarmModalLabel">Add New Farm</h5>
             <button
@@ -212,15 +213,18 @@
           <div class="modal-body">
             <div class="form-group mb-3">
               <label for="company">Company</label>
-              <select
-                class="form-control"
-                id="company"
-                name="company_id"
-              >
-                {% for customer in children_2 %}
-                <option value="{{ customer.id }}">{{ customer.name }}</option>
-                {% endfor %}
-              </select>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="company" 
+                name="company_name" 
+                value="{% for customer in children_2 %}{{ customer.name }}{% endfor %}" 
+                readonly>
+              <!-- Add hidden input for company_id -->
+              <input 
+                type="hidden" 
+                name="company_id" 
+                value="{% for customer in children_2 %}{{ customer.id }}{% endfor %}">
             </div>
             <div class="form-group mb-3">
               <label for="name">Name</label>

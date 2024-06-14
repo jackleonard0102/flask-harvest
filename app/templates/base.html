@@ -86,16 +86,16 @@
             <a class="nav-link {% if request.endpoint == 'auth_user_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_user_bp.index') }}">User</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_farm_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_farm_bp.index') }}">Farm</a>
+            <a class="nav-link {% if request.endpoint == 'auth_farm_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_farm_bp.index') }}">Farm</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_field_bp.index') }}">Field</a>
+            <a class="nav-link {% if request.endpoint == 'auth_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_field_bp.index') }}">Field</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_harvest_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_bp.index') }}">Harvest</a>
+            <a class="nav-link {% if request.endpoint == 'auth_harvest_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_bp.index') }}">Harvest</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_harvest_per_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_per_field_bp.index') }}">Harvest per field</a>
+            <a class="nav-link {% if request.endpoint == 'auth_harvest_per_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_per_field_bp.index') }}">Harvest per field</a>
           </li>
         {% endif %}
           <div class="nav-item dropdown">
