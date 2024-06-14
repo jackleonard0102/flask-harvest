@@ -109,6 +109,15 @@
           <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'auth_harvest_per_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_per_field_bp.index') }}">Harvest per field</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'auth_truck_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_truck_bp.index') }}">Truck</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'auth_harvest_rig_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_rig_bp.index') }}">Harvest Rig</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'auth_truckload_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_truckload_bp.index') }}">Truck Load</a>
+          </li>
         {% endif %}
           <div class="nav-item dropdown">
             <a

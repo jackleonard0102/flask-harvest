@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-  <h2>Trucks</h2>
+  <h2>Harvest Rigs</h2>
   <div class="d-flex justify-content-between align-items-center my-3">
     <input
       type="text"
       class="form-control w-50"
       id="searchBox"
-      placeholder="Search trucks..."
+      placeholder="Search harvest_rigs..."
     />
     <button
       class="btn btn-success"
       data-bs-toggle="modal"
-      data-bs-target="#addTruckModal"
+      data-bs-target="#addHarvestRigModal"
     >
-      Add Truck
+      Add Harvest Rig
     </button>
   </div>
 
@@ -25,26 +25,26 @@
         <th class="text-center">Company</th>
         <th class="text-center">Name</th>
         <th class="text-center">Year</th>
-        <th class="text-center">Vin</th>
-        <th class="text-center">Driver</th>
+        <th class="text-center">Serial Number</th>
+        <th class="text-center">Operator</th>
         <th class="text-center">Actions</th>
       </tr>
     </thead>
-    <tbody id="truckTableBody">
-      {% for truck in children_1 %}
+    <tbody id="harvest_rigTableBody">
+      {% for harvest_rig in children_1 %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
-        <td class="text-center align-middle">{{ company_map[truck.company_id] }}</td>
-        <td class="text-center align-middle">{{ truck.name }}</td>
-        <td class="text-center align-middle">{{ truck.year }}</td>
-        <td class="text-center align-middle">{{ truck.vin }}</td>
-        <td class="text-center align-middle">{{ truck.current_driver_id }}</td>
+        <td class="text-center align-middle">{{ company_map[harvest_rig.company_id] }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.name }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.year }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.serial_number }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.current_operator_id }}</td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"
             style="background-color: transparent; border: none"
             data-bs-toggle="modal"
-            data-bs-target="#editTruckModal{{ truck.id }}"
+            data-bs-target="#editHarvestRigModal{{ harvest_rig.id }}"
           >
             <i class="bi bi-pencil-square text-primary fs-4"></i>
           </button>
@@ -52,30 +52,30 @@
             class="btn btn-sm"
             style="background-color: transparent; border: none"
             data-bs-toggle="modal"
-            data-bs-target="#deleteTruckModal{{ truck.id }}"
+            data-bs-target="#deleteHarvestRigModal{{ harvest_rig.id }}"
           >
             <i class="bi bi-trash text-danger fs-4"></i>
           </button>
         </td>
       </tr>
 
-      <!-- Edit Truck Modal -->
+      <!-- Edit HarvestRig Modal -->
       <div
         class="modal fade"
-        id="editTruckModal{{ truck.id }}"
+        id="editHarvestRigModal{{ harvest_rig.id }}"
         tabindex="-1"
-        aria-labelledby="editFarbModalLabel{{ truck.id }}"
+        aria-labelledby="editFarbModalLabel{{ harvest_rig.id }}"
         aria-hidden="true"
       >
         <div class="modal-dialog">
           <div class="modal-content">
             <form
               method="POST"
-              action="{{ url_for('auth_truck_bp.edit_truck', truck_id=truck.id) }}"
+              action="{{ url_for('auth_harvest_rig_bp.edit_harvest_rig', harvest_rig_id=harvest_rig.id) }}"
             >
               <div class="modal-header">
-                <h5 class="modal-title" id="editTruckModalLabel{{ truck.id }}">
-                  Edit Truck
+                <h5 class="modal-title" id="editHarvestRigModalLabel{{ harvest_rig.id }}">
+                  Edit HarvestRig
                 </h5>
                 <button
                   type="button"
@@ -86,57 +86,57 @@
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
-                  <label for="company{{ truck.id }}">Company</label>
+                  <label for="company{{ harvest_rig.id }}">Company</label>
                   <select
                     class="form-control"
-                    id="company{{ truck.id }}"
+                    id="company{{ harvest_rig.id }}"
                     name="company_id"
                   >
                     {% for customer in children_2 %}
-                    <option value="{{ customer.id }}" {% if customer.id == truck.company_id %}selected{% endif %}>
+                    <option value="{{ customer.id }}" {% if customer.id == harvest_rig.company_id %}selected{% endif %}>
                       {{ customer.name }}
                     </option>
                     {% endfor %}
                   </select>
                 </div>
                 <div class="form-group mb-3">
-                  <label for="name{{ truck.id }}">Name</label>
+                  <label for="name{{ harvest_rig.id }}">Name</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="name{{ truck.id }}"
+                    id="name{{ harvest_rig.id }}"
                     name="name"
-                    value="{{ truck.name }}" required
+                    value="{{ harvest_rig.name }}" required
                   />
                 </div>
                 <div class="form-group mb-3">
-                  <label for="year{{ truck.id }}">Year</label>
+                  <label for="year{{ harvest_rig.id }}">Year</label>
                   <input
                     type="year"
                     class="form-control"
-                    id="year{{ truck.id }}"
+                    id="year{{ harvest_rig.id }}"
                     name="year"
-                    value="{{ truck.year }}" required
+                    value="{{ harvest_rig.year }}" required
                   />
                 </div>
                 <div class="form-group mb-3">
-                  <label for="vin{{ truck.id }}">Vin</label>
+                  <label for="serial_number{{ harvest_rig.id }}">Serial Number</label>
                   <input
-                    type="vin"
+                    type="serial_number"
                     class="form-control"
-                    id="vin{{ truck.id }}"
-                    name="vin"
-                    value="{{ truck.vin }}" required
+                    id="serial_number{{ harvest_rig.id }}"
+                    name="serial_number"
+                    value="{{ harvest_rig.serial_number }}" required
                   />
                 </div>
                 <div class="form-group mb-3">
-                  <label for="driver{{ truck.id }}">Driver</label>
+                  <label for="operator{{ harvest_rig.id }}">Operator</label>
                   <input
-                    type="driver"
+                    type="operator"
                     class="form-control"
-                    id="driver{{ truck.id }}"
-                    name="driver"
-                    value="{{ truck.current_driver_id }}" required
+                    id="operator{{ harvest_rig.id }}"
+                    name="operator"
+                    value="{{ harvest_rig.current_operator_id }}" required
                   />
                 </div>
               </div>
@@ -157,18 +157,18 @@
         </div>
       </div>
 
-      <!-- Delete Truck Modal -->
+      <!-- Delete HarvestRig Modal -->
       <div
         class="modal fade"
-        id="deleteTruckModal{{ truck.id }}"
+        id="deleteHarvestRigModal{{ harvest_rig.id }}"
         tabindex="-1"
-        aria-labelledby="deleteTruckModalLabel{{ truck.id }}"
+        aria-labelledby="deleteHarvestRigModalLabel{{ harvest_rig.id }}"
         aria-hidden="true"
       >
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="deleteTruckModalLabel{{ truck.id }}">
+              <h5 class="modal-title" id="deleteHarvestRigModalLabel{{ harvest_rig.id }}">
                 Confirm Delete
               </h5>
               <button
@@ -179,11 +179,11 @@
               ></button>
             </div>
             <div class="modal-body">
-              Are you sure you want to delete truck {{ truck.name }}?
+              Are you sure you want to delete harvest_rig {{ harvest_rig.name }}?
             </div>
             <div class="modal-footer">
               <a
-                href="{{ url_for('auth_truck_bp.delete_truck', truck_id=truck.id) }}"
+                href="{{ url_for('auth_harvest_rig_bp.delete_harvest_rig', harvest_rig_id=harvest_rig.id) }}"
                 class="btn btn-danger"
                 >Delete</a
               >
@@ -203,19 +203,19 @@
     </tbody>
   </table>
 
-  <!-- Add Truck Modal -->
+  <!-- Add HarvestRig Modal -->
   <div
     class="modal fade"
-    id="addTruckModal"
+    id="addHarvestRigModal"
     tabindex="-1"
-    aria-labelledby="addTruckModalLabel"
+    aria-labelledby="addHarvestRigModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <form method="POST" action="{{ url_for('auth_truck_bp.add_truck_modal') }}">
+        <form method="POST" action="{{ url_for('auth_harvest_rig_bp.add_harvest_rig_modal') }}">
           <div class="modal-header">
-            <h5 class="modal-title" id="addTruckModalLabel">Add New Truck</h5>
+            <h5 class="modal-title" id="addHarvestRigModalLabel">Add New Harvest Rig</h5>
             <button
               type="button"
               class="btn-close"
@@ -255,21 +255,21 @@
               />
             </div>
             <div class="form-group mb-3">
-              <label for="vin">Vin</label>
+              <label for="serial_number">Serial Number</label>
               <input
-                type="vin"
+                type="serial_number"
                 class="form-control"
-                id="vin"
-                name="vin"
+                id="serial_number"
+                name="serial_number"
               />
             </div>
             <div class="form-group mb-3">
-              <label for="driver">Driver</label>
+              <label for="operator">Operator</label>
               <input
-                type="driver"
+                type="operator"
                 class="form-control"
-                id="driver"
-                name="driver"
+                id="operator"
+                name="operator"
               />
             </div>
           </div>
@@ -292,7 +292,7 @@
 <script>
   document.getElementById("searchBox").addEventListener("input", function () {
     const searchValue = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#truckTableBody tr");
+    const rows = document.querySelectorAll("#harvest_rigTableBody tr");
     rows.forEach((row) => {
       const cells = row.querySelectorAll("td");
       const match = Array.from(cells).some((cell) =>

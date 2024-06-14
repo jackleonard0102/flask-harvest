@@ -21,6 +21,9 @@ from app.routes.auth.farm import auth_farm_bp
 from app.routes.auth.field import auth_field_bp
 from app.routes.auth.harvest import auth_harvest_bp
 from app.routes.auth.harvest_per_field import auth_harvest_per_field_bp
+from app.routes.auth.truck import auth_truck_bp
+from app.routes.auth.truckload import auth_truckload_bp
+from app.routes.auth.harvest_rig import auth_harvest_rig_bp
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
@@ -77,6 +80,9 @@ def create_app():
     app.register_blueprint(auth_field_bp)
     app.register_blueprint(auth_harvest_bp)
     app.register_blueprint(auth_harvest_per_field_bp)
+    app.register_blueprint(auth_truck_bp)
+    app.register_blueprint(auth_harvest_rig_bp)
+    app.register_blueprint(auth_truckload_bp)
     app.cli.add_command(init_db)
     setup_admin(app, db)
     return app
