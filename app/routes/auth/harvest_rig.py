@@ -13,7 +13,7 @@ def index():
         return redirect(url_for('main.home'))
 
     children_1 = HarvestRig.query.all()
-    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active').all()
+    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active', Customer.id == current_user.company_id).all()
     
     # Create a dictionary to map company_id to company.name
     company_map = {customer.id: customer.name for customer in children_2}
