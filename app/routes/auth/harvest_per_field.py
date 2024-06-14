@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import HarvestPerField, Harvest, FarmField
+from app.models import HarvestPerField, Harvest, FarmField, Farm
 from app.extensions import db
 
 auth_harvest_per_field_bp = Blueprint('auth_harvest_per_field_bp', __name__)
@@ -8,13 +8,19 @@ auth_harvest_per_field_bp = Blueprint('auth_harvest_per_field_bp', __name__)
 @auth_harvest_per_field_bp.route('/auth/harvest_per_field')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superauth and auth
+    if current_user.permission != 1:  # Suppose 0 and 1 are permissions for superauth and auth
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
     children_1 = HarvestPerField.query.all()
-    children_2 = Harvest.query.all()
-    children_3 = FarmField.query.all()
+
+    # Correct usage of query and join
+    children_2 = db.session.query(Harvest).join(Farm, Harvest.farm_id == Farm.id) \
+                        .filter(Farm.company_id == current_user.company_id) \
+                        .all()
+    children_3 = db.session.query(FarmField).join(Farm, FarmField.farm_id == Farm.id) \
+                        .filter(Farm.company_id == current_user.company_id) \
+                        .all()
     
     # Create dictionaries to map harvest_id and field_id to their names
     harvest_map = {harvest.id: harvest.name for harvest in children_2}
@@ -22,10 +28,11 @@ def index():
     
     return render_template('auth/harvest_per_field.html', current_user=current_user, children_1=children_1, harvest_map=harvest_map, field_map=field_map, children_2=children_2, children_3=children_3)
 
-@auth_harvest_per_field_bp.route('/add_harvest_per_field_modal', methods=['POST'])
+
+@auth_harvest_per_field_bp.route('/auth/add_harvest_per_field_modal', methods=['POST'])
 @login_required
 def add_harvest_per_field_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 1:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -49,11 +56,11 @@ def add_harvest_per_field_modal():
     return redirect(url_for('auth_harvest_per_field_bp.index'))
 
 
-@auth_harvest_per_field_bp.route('/edit_harvest_per_field/<int:harvest_per_field_id>', methods=['POST'])
+@auth_harvest_per_field_bp.route('/auth/edit_harvest_per_field/<int:harvest_per_field_id>', methods=['POST'])
 @login_required
 def edit_harvest_per_field(harvest_per_field_id):
     harvest_per_field = HarvestPerField.query.get_or_404(harvest_per_field_id)
-    if current_user.permission not in [0, 1]:  # Only superauth or auth can edit harvest per fields
+    if current_user.permission != 1:  # Only superauth or auth can edit harvest per fields
         flash('Unauthorized access')
         return redirect(url_for('auth_harvest_per_field_bp.index'))
 
@@ -74,11 +81,11 @@ def edit_harvest_per_field(harvest_per_field_id):
     flash('Harvest Per Field successfully updated!')
     return redirect(url_for('auth_harvest_per_field_bp.index'))
 
-@auth_harvest_per_field_bp.route('/delete_harvest_per_field/<int:harvest_per_field_id>')
+@auth_harvest_per_field_bp.route('/auth/delete_harvest_per_field/<int:harvest_per_field_id>')
 @login_required
 def delete_harvest_per_field(harvest_per_field_id):
     harvest_per_field = HarvestPerField.query.get_or_404(harvest_per_field_id)
-    if current_user.permission not in [0, 1]:  # Only superauth or auth can delete harvest per fields
+    if current_user.permission != 1:  # Only superauth or auth can delete harvest per fields
         flash('Unauthorized access')
         return redirect(url_for('auth_harvest_per_field_bp.index'))
 

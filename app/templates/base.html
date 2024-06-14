@@ -49,7 +49,9 @@
       }
       .content {
         padding: 20px;
-        margin-top: 70px; /* Add this to avoid content being hidden behind the fixed navbar */
+      }
+      .container {
+        margin-top: 70px;
       }
     </style>
   </head>
@@ -123,7 +125,7 @@
     </nav>
     {% endif %}
 
-    <div class="container mt-3">
+    <div class="container">
       {% for message in get_flashed_messages() %}
       <div class="flash alert alert-success">{{ message|safe }}</div>
       {% endfor %}
