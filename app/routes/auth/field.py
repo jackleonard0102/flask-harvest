@@ -9,22 +9,25 @@ auth_field_bp = Blueprint('auth_field_bp', __name__)
 @auth_field_bp.route('/auth/field')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superauth and auth
+    if current_user.permission != 1:  
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = FarmField.query.all()
-    children_2 = Farm.query.filter(Farm.deleted_at == None).all()  # Assuming we need active farms
+    children_1 = FarmField.query.join(Farm, FarmField.farm_id == Farm.id) \
+                            .filter(Farm.company_id == current_user.company_id) \
+                            .all()
+
+    children_2 = Farm.query.filter(Farm.company_id == current_user.company_id, Farm.deleted_at == None).all()
     
     # Create a dictionary to map farm_id to farm.name
     farm_map = {farm.id: farm.name for farm in children_2}
     
     return render_template('auth/field.html', current_user=current_user, children_1=children_1, farm_map=farm_map, children_2=children_2)
 
-@auth_field_bp.route('/add_field_modal', methods=['POST'])
+@auth_field_bp.route('/auth/add_field_modal', methods=['POST'])
 @login_required
 def add_field_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 1:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -48,11 +51,11 @@ def add_field_modal():
     return redirect(url_for('auth_field_bp.index'))
 
 
-@auth_field_bp.route('/edit_field/<int:field_id>', methods=['POST'])
+@auth_field_bp.route('/auth/edit_field/<int:field_id>', methods=['POST'])
 @login_required
 def edit_field(field_id):
     field = FarmField.query.get_or_404(field_id)
-    if current_user.permission not in [0, 1]:  # Only superauth or auth can edit fields
+    if current_user.permission != 1:  # O
         flash('Unauthorized access')
         return redirect(url_for('auth_field_bp.index'))
 
@@ -75,11 +78,11 @@ def edit_field(field_id):
 
 
 
-@auth_field_bp.route('/delete_field/<int:field_id>')
+@auth_field_bp.route('/auth/delete_field/<int:field_id>')
 @login_required
 def delete_field(field_id):
     field = FarmField.query.get_or_404(field_id)
-    if current_user.permission not in [0, 1]:  # Only superauth or auth can delete fields
+    if current_user.permission != 1:  
         flash('Unauthorized access')
         return redirect(url_for('auth_field_bp.index'))  # Update the URL endpoint to 'auth_field_bp.index'
 

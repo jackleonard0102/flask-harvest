@@ -13,8 +13,8 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = Farm.query.filter(Farm.company_id == current_user.company_id).all()
-    children_2 = Customer.query.filter(Customer.id == current_user.company_id)
+    children_1 = Farm.query.filter(Farm.company_id == current_user.company_id, Farm.deleted_at == None).all()
+    children_2 = Customer.query.filter(Customer.id == current_user.company_id, Customer.deleted_at == None)
     # Create a dictionary to map company_id to company.name
     company_map = {customer.id: customer.name for customer in children_2}
     
