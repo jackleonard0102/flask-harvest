@@ -76,3 +76,41 @@ class HarvestPerField(TimestampMixin, db.Model):
     harvest_id = db.Column(db.Integer, db.ForeignKey('harvest.id'), nullable=False)
     field_id = db.Column(db.Integer, db.ForeignKey('farm_field.id'), nullable=False)
     yield_amount = db.Column(db.Float, nullable=False)
+
+class Truck(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    year = db.Column(db.String(255), nullable=False)
+    vin = db.Column(db.String(255), nullable=False)
+    current_driver_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    current_driver = db.relationship('User', backref='current_truck', lazy=True)
+
+class HarvestRig(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    year = db.Column(db.String(255), nullable=False)
+    serial_number = db.Column(db.String(255), nullable=False)
+    current_operator_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    current_operator = db.relationship('User', backref='current_harvest_rig', lazy=True)
+
+class Truckload(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    load_date_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    unload_date_time = db.Column(db.DateTime)
+    harvest_rig_id = db.Column(db.Integer, db.ForeignKey('harvest_rig.id'), nullable=False)
+    operator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    truck_id = db.Column(db.Integer, db.ForeignKey('truck.id'), nullable=False)
+    trucker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('farm_field.id'), nullable=False)
+    harvest_id = db.Column(db.Integer, db.ForeignKey('harvest.id'), nullable=False)
+    yield_amount = db.Column(db.Float)
+    yield_type = db.Column(db.String(80))
+
+    harvest_rig = db.relationship('HarvestRig', backref='truckloads', lazy=True)
+    operator = db.relationship('User', foreign_keys=[operator_id], backref='operator_truckloads', lazy=True)
+    truck = db.relationship('Truck', backref='truckloads', lazy=True)
+    trucker = db.relationship('User', foreign_keys=[trucker_id], backref='trucker_truckloads', lazy=True)
+    field = db.relationship('FarmField', backref='truckloads', lazy=True)
+    harvest = db.relationship('Harvest', backref='truckloads', lazy=True)
