@@ -9,22 +9,23 @@ auth_harvest_bp = Blueprint('auth_harvest_bp', __name__)
 @auth_harvest_bp.route('/auth/harvest')
 @login_required
 def index():
-    if current_user.permission not in [0, 1]:  # Suppose 0 and 1 are permissions for superauth and auth
+    if current_user.permission != 1:  # Suppose 0 and 1 are permissions for superauth and auth
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
-
-    children_1 = Harvest.query.all()
-    children_2 = Farm.query.filter(Farm.deleted_at == None).all()
+    children_1 = Harvest.query.join(Farm, Harvest.farm_id == Farm.id) \
+                        .filter(Farm.company_id == current_user.company_id) \
+                        .all()
+    children_2 = Farm.query.filter(Farm.company_id == current_user.company_id, Farm.deleted_at == None).all()
     
     # Create a dictionary to map farm_id to farm.name
     farm_map = {farm.id: farm.name for farm in children_2}
     
     return render_template('auth/harvest.html', current_user=current_user, children_1=children_1, farm_map=farm_map, children_2=children_2)
 
-@auth_harvest_bp.route('/add_harvest_modal', methods=['POST'])
+@auth_harvest_bp.route('/auth/add_harvest_modal', methods=['POST'])
 @login_required
 def add_harvest_modal():
-    if current_user.permission not in [0, 1]:
+    if current_user.permission != 1:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -48,11 +49,11 @@ def add_harvest_modal():
     return redirect(url_for('auth_harvest_bp.index'))
 
 
-@auth_harvest_bp.route('/edit_harvest/<int:harvest_id>', methods=['POST'])
+@auth_harvest_bp.route('/auth/edit_harvest/<int:harvest_id>', methods=['POST'])
 @login_required
 def edit_harvest(harvest_id):
     harvest = Harvest.query.get_or_404(harvest_id)
-    if current_user.permission not in [0, 1]:  # Only superauth or auth can edit harvests
+    if current_user.permission != 1:  # Only superauth or auth can edit harvests
         flash('Unauthorized access')
         return redirect(url_for('auth_harvest_bp.index'))
 
@@ -73,11 +74,11 @@ def edit_harvest(harvest_id):
     flash('Harvest successfully updated!')
     return redirect(url_for('auth_harvest_bp.index'))
 
-@auth_harvest_bp.route('/delete_harvest/<int:harvest_id>')
+@auth_harvest_bp.route('/auth/delete_harvest/<int:harvest_id>')
 @login_required
 def delete_harvest(harvest_id):
     harvest = Harvest.query.get_or_404(harvest_id)
-    if current_user.permission not in [0, 1]:  # Only superauth or auth can delete harvests
+    if current_user.permission != 1:  # Only superauth or auth can delete harvests
         flash('Unauthorized access')
         return redirect(url_for('auth_harvest_bp.index'))
 

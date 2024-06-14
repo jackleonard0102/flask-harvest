@@ -67,7 +67,7 @@
           <div class="modal-content">
             <form
               method="POST"
-              action="{{ url_for('admin_harvest_bp.edit_harvest', harvest_id=harvest.id) }}"
+              action="{{ url_for('auth_harvest_bp.edit_harvest', harvest_id=harvest.id) }}"
             >
               <div class="modal-header">
                 <h5 class="modal-title" id="editHarvestModalLabel{{ harvest.id }}">
@@ -159,7 +159,7 @@
             </div>
             <div class="modal-footer">
               <a
-                href="{{ url_for('admin_harvest_bp.delete_harvest', harvest_id=harvest.id) }}"
+                href="{{ url_for('auth_harvest_bp.delete_harvest', harvest_id=harvest.id) }}"
                 class="btn btn-danger"
               >Delete</a>
               <button
@@ -188,7 +188,7 @@
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <form method="POST" action="{{ url_for('admin_harvest_bp.add_harvest_modal') }}">
+        <form method="POST" action="{{ url_for('auth_harvest_bp.add_harvest_modal') }}">
           <div class="modal-header">
             <h5 class="modal-title" id="addHarvestModalLabel">Add New Harvest</h5>
             <button
