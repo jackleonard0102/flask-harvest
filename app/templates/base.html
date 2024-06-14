@@ -84,6 +84,9 @@
           <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'admin_truck_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_truck_bp.index') }}">Truck</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'admin_harvest_rig_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_rig_bp.index') }}">Harvest Rig</a>
+          </li>
         {% elif current_user.permission == 1 %}
         <!-- User Navbar without Company link -->
         <a class="navbar-brand" href="{{ url_for('main.home') }}">Harvest</a>

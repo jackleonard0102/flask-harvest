@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h2>HarvestRigs</h2>
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <input
+      type="text"
+      class="form-control w-50"
+      id="searchBox"
+      placeholder="Search harvest_rigs..."
+    />
+    <button
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#addHarvestRigModal"
+    >
+      Add HarvestRig
+    </button>
+  </div>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">No</th>
+        <th class="text-center">Company</th>
+        <th class="text-center">Name</th>
+        <th class="text-center">Year</th>
+        <th class="text-center">Serial Number</th>
+        <th class="text-center">Operator</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="harvest_rigTableBody">
+      {% for harvest_rig in children_1 %}
+      <tr>
+        <td class="text-center align-middle">{{ loop.index }}</td>
+        <td class="text-center align-middle">{{ company_map[harvest_rig.company_id] }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.name }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.year }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.serial_number }}</td>
+        <td class="text-center align-middle">{{ harvest_rig.current_operator_id }}</td>
+        <td class="text-center align-middle">
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#editHarvestRigModal{{ harvest_rig.id }}"
+          >
+            <i class="bi bi-pencil-square text-primary fs-4"></i>
+          </button>
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteHarvestRigModal{{ harvest_rig.id }}"
+          >
+            <i class="bi bi-trash text-danger fs-4"></i>
+          </button>
+        </td>
+      </tr>
+
+      <!-- Edit HarvestRig Modal -->
+      <div
+        class="modal fade"
+        id="editHarvestRigModal{{ harvest_rig.id }}"
+        tabindex="-1"
+        aria-labelledby="editFarbModalLabel{{ harvest_rig.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form
+              method="POST"
+              action="{{ url_for('admin_harvest_rig_bp.edit_harvest_rig', harvest_rig_id=harvest_rig.id) }}"
+            >
+              <div class="modal-header">
+                <h5 class="modal-title" id="editHarvestRigModalLabel{{ harvest_rig.id }}">
+                  Edit HarvestRig
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group mb-3">
+                  <label for="company{{ harvest_rig.id }}">Company</label>
+                  <select
+                    class="form-control"
+                    id="company{{ harvest_rig.id }}"
+                    name="company_id"
+                  >
+                    {% for customer in children_2 %}
+                    <option value="{{ customer.id }}" {% if customer.id == harvest_rig.company_id %}selected{% endif %}>
+                      {{ customer.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="name{{ harvest_rig.id }}">Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name{{ harvest_rig.id }}"
+                    name="name"
+                    value="{{ harvest_rig.name }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="year{{ harvest_rig.id }}">Year</label>
+                  <input
+                    type="year"
+                    class="form-control"
+                    id="year{{ harvest_rig.id }}"
+                    name="year"
+                    value="{{ harvest_rig.year }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="serial_number{{ harvest_rig.id }}">Serial Number</label>
+                  <input
+                    type="serial_number"
+                    class="form-control"
+                    id="serial_number{{ harvest_rig.id }}"
+                    name="serial_number"
+                    value="{{ harvest_rig.serial_number }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="operator{{ harvest_rig.id }}">Operator</label>
+                  <input
+                    type="operator"
+                    class="form-control"
+                    id="operator{{ harvest_rig.id }}"
+                    name="operator"
+                    value="{{ harvest_rig.current_operator_id }}" required
+                  />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                  Update
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete HarvestRig Modal -->
+      <div
+        class="modal fade"
+        id="deleteHarvestRigModal{{ harvest_rig.id }}"
+        tabindex="-1"
+        aria-labelledby="deleteHarvestRigModalLabel{{ harvest_rig.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteHarvestRigModalLabel{{ harvest_rig.id }}">
+                Confirm Delete
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to delete harvest_rig {{ harvest_rig.name }}?
+            </div>
+            <div class="modal-footer">
+              <a
+                href="{{ url_for('admin_harvest_rig_bp.delete_harvest_rig', harvest_rig_id=harvest_rig.id) }}"
+                class="btn btn-danger"
+                >Delete</a
+              >
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Add HarvestRig Modal -->
+  <div
+    class="modal fade"
+    id="addHarvestRigModal"
+    tabindex="-1"
+    aria-labelledby="addHarvestRigModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST" action="{{ url_for('admin_harvest_rig_bp.add_harvest_rig_modal') }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addHarvestRigModalLabel">Add New Harvest Rig</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group mb-3">
+              <label for="company">Company</label>
+              <select
+                class="form-control"
+                id="company"
+                name="company_id"
+              >
+                {% for customer in children_2 %}
+                <option value="{{ customer.id }}">{{ customer.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="name">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="year">Year</label>
+              <input
+                type="year"
+                class="form-control"
+                id="year"
+                name="year" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="serial_number">Serial Number</label>
+              <input
+                type="serial_number"
+                class="form-control"
+                id="serial_number"
+                name="serial_number"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="operator">Operator</label>
+              <input
+                type="operator"
+                class="form-control"
+                id="operator"
+                name="operator"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("searchBox").addEventListener("input", function () {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#harvest_rigTableBody tr");
+    rows.forEach((row) => {
+      const cells = row.querySelectorAll("td");
+      const match = Array.from(cells).some((cell) =>
+        cell.innerText.toLowerCase().includes(searchValue)
+      );
+      row.style.display = match ? "" : "none";
+    });
+  });
+</script>
+{% endblock %}
