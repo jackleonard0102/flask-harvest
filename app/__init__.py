@@ -14,6 +14,7 @@ from app.routes.admin.field import admin_field_bp
 from app.routes.admin.harvest import admin_harvest_bp
 from app.routes.admin.harvest_per_field import admin_harvest_per_field_bp
 from app.routes.admin.truck import admin_truck_bp
+from app.routes.admin.truckload import admin_truckload_bp
 from app.routes.admin.harvest_rig import admin_harvest_rig_bp
 from app.routes.auth.user import auth_user_bp
 from app.routes.auth.farm import auth_farm_bp
@@ -69,6 +70,7 @@ def create_app():
     app.register_blueprint(admin_harvest_per_field_bp)
     app.register_blueprint(admin_truck_bp)
     app.register_blueprint(admin_harvest_rig_bp)
+    app.register_blueprint(admin_truckload_bp)
     
     app.register_blueprint(auth_user_bp)
     app.register_blueprint(auth_farm_bp)
