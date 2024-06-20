@@ -22,7 +22,6 @@
     <thead class="thead-dark">
       <tr>
         <th class="text-center">No</th>
-        <th class="text-center">Company</th>
         <th class="text-center">Name</th>
         <th class="text-center">Year</th>
         <th class="text-center">Vin</th>
@@ -34,7 +33,6 @@
       {% for truck in children_1 %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
-        <td class="text-center align-middle">{{ company_map[truck.company_id] }}</td>
         <td class="text-center align-middle">{{ truck.name }}</td>
         <td class="text-center align-middle">{{ truck.year }}</td>
         <td class="text-center align-middle">{{ truck.vin }}</td>

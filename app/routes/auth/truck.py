@@ -12,7 +12,7 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = Truck.query.all()
+    children_1 = Truck.query.filter(Truck.company_id == current_user.company_id).all()
     children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active', Customer.id == current_user.company_id).all()
     
     # Create a dictionary to map company_id to company.name
