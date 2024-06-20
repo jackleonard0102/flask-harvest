@@ -33,7 +33,7 @@ def add_harvest_rig_modal():
     serial_number = request.form['serial_number']
     operator = request.form['operator']
 
-    if not name or not year or not serial_number or not operator:
+    if not name or not year or not serial_number:
         flash('All fields are required.')
         return redirect(url_for('auth_harvest_rig_bp.index'))
 
@@ -62,7 +62,7 @@ def edit_harvest_rig(harvest_rig_id):
     serial_number = request.form['serial_number']
     operator = request.form['operator']
 
-    if not name or not year or not serial_number or not operator:
+    if not name or not year or not serial_number:
         flash('All fields are required.')
         return redirect(url_for('auth_harvest_rig_bp.index'))
 
