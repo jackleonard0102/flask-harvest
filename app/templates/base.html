@@ -118,6 +118,9 @@
           <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'auth_truckload_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_truckload_bp.index') }}">Truck Load</a>
           </li>
+        {% elif current_user.permission == 4 %}
+        <!-- User Navbar without Company link -->
+        <a class="navbar-brand" href="{{ url_for('main.home') }}">Harvest</a>
         {% endif %}
           <div class="nav-item dropdown">
             <a
