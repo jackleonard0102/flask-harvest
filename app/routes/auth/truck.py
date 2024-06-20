@@ -34,7 +34,7 @@ def add_truck_modal():
     vin = request.form['vin']
     driver = request.form['driver']
 
-    if not name or not year or not vin or not driver:
+    if not name or not year or not vin:
         flash('All fields are required.')
         return redirect(url_for('auth_truck_bp.index'))
 
@@ -64,7 +64,7 @@ def edit_truck(truck_id):
     vin = request.form['vin']
     driver = request.form['driver']
 
-    if not name or not year or not vin or not driver:
+    if not name or not year or not vin:
         flash('All fields are required.')
         return redirect(url_for('auth_truck_bp.index'))
 
