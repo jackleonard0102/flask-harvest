@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="container">
   <h2>Trucks</h2>
   <div class="d-flex justify-content-between align-items-center my-3">
@@ -29,17 +28,31 @@
         <td class="text-center align-middle">{{ truck.name }}</td>
         <td class="text-center align-middle">{{ truck.year }}</td>
         <td class="text-center align-middle">{{ truck.vin }}</td>
-        <td class="text-center align-middle driver-cell">{{ truck.current_driver_id and current_user.username or '' }}</td>
+        <td class="text-center align-middle driver-cell">
+          {{ truck.current_driver_id and current_user.username or '' }}
+        </td>
         <td class="text-center align-middle">
-          <form method="POST" action="{{ url_for('trucker_bp.select_truck_ajax') }}" class="select-truck-form">
-            <input type="hidden" name="truck_id" value="{{ truck.id }}">
-            <button type="submit" class="btn btn-primary select-truck-button" 
-                    {% if truck.current_driver_id and truck.current_driver_id != current_user.id %}disabled{% endif %}>
-              {% if truck.current_driver_id == current_user.id %}
-                Cancel
-              {% else %}
-                Select
-              {% endif %}
+          <form
+            method="POST"
+            action="{{ url_for('trucker_bp.select_truck_ajax') }}"
+            class="select-truck-form"
+          >
+            <input type="hidden" name="truck_id" value="{{ truck.id }}" />
+            <button
+              type="submit"
+              class="btn {% if truck.current_driver_id == current_user.id %}btn-danger{% else %}btn-primary{% endif %} select-truck-button"
+              {%
+              if
+              truck.current_driver_id
+              and
+              truck.current_driver_id
+              !="current_user.id"
+              %}disabled{%
+              endif
+              %}
+            >
+              {% if truck.current_driver_id == current_user.id %} Cancel {% else
+              %} Select {% endif %}
             </button>
           </form>
         </td>
@@ -50,44 +63,47 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const selectButtons = document.querySelectorAll('.select-truck-form');
+  document.addEventListener("DOMContentLoaded", function () {
+    const selectButtons = document.querySelectorAll(".select-truck-form");
 
-    selectButtons.forEach(form => {
-      form.addEventListener('submit', function(event) {
+    selectButtons.forEach((form) => {
+      form.addEventListener("submit", function (event) {
         event.preventDefault();
         const formData = new FormData(form);
-        const button = form.querySelector('.select-truck-button');
+        const button = form.querySelector(".select-truck-button");
         const isCancel = button.innerText === "Cancel";
 
         fetch(form.action, {
-          method: 'POST',
+          method: "POST",
           body: formData,
           headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        }).then(response => response.json())
-          .then(data => {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
             if (data.error) {
               alert(data.error);
               return;
             }
 
-            const truckRow = document.querySelector(`tr[data-truck-id='${data.truck_id}']`);
-            const driverCell = truckRow.querySelector('.driver-cell');
+            const truckRow = document.querySelector(
+              `tr[data-truck-id='${data.truck_id}']`
+            );
+            const driverCell = truckRow.querySelector(".driver-cell");
 
             if (isCancel) {
               // Reset buttons if a truck is deselected
-              selectButtons.forEach(frm => {
-                const btn = frm.querySelector('.select-truck-button');
+              selectButtons.forEach((frm) => {
+                const btn = frm.querySelector(".select-truck-button");
                 btn.innerText = "Select";
                 btn.disabled = false;
               });
-              driverCell.innerText = '';
+              driverCell.innerText = "";
             } else {
               // Disable all buttons and set the clicked button to "Cancel"
-              selectButtons.forEach(frm => {
-                const btn = frm.querySelector('.select-truck-button');
+              selectButtons.forEach((frm) => {
+                const btn = frm.querySelector(".select-truck-button");
                 if (btn !== button) {
                   btn.disabled = true;
                 } else {
