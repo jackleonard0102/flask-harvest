@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import Truckload
+from app.models import Truckload, Customer, Truck, HarvestRig, Harvest, HarvestPerField
 from app.extensions import db
 
 admin_truckload_bp = Blueprint('admin_truckload_bp', __name__)
@@ -13,8 +13,13 @@ def index():
         return redirect(url_for('main.home'))
 
     truckloads = Truckload.query.all()
+    customers = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active').all()
+    trucks = Truck.query.all()
+    rigs = HarvestRig.query.all()
+    harvests = Harvest.query.all()
+    fields = HarvestPerField.query.all()
     
-    return render_template('admin/truckload.html', current_user=current_user, truckloads=truckloads)
+    return render_template('admin/truckload.html', current_user=current_user, truckloads=truckloads, customers=customers, trucks=trucks, rigs=rigs, harvests=harvests, fields=fields)
 
 @admin_truckload_bp.route('/add_truckload_modal', methods=['POST'])
 @login_required

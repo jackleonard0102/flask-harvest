@@ -76,6 +76,7 @@ class HarvestPerField(TimestampMixin, db.Model):
     harvest_id = db.Column(db.Integer, db.ForeignKey('harvest.id'), nullable=False)
     field_id = db.Column(db.Integer, db.ForeignKey('farm_field.id'), nullable=False)
     yield_amount = db.Column(db.Float, nullable=False)
+    yield_type = db.Column(db.String(80), nullable=False)
 
 class Truck(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

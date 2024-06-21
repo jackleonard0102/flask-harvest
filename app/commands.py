@@ -1,6 +1,6 @@
 import click
 from flask.cli import with_appcontext
-from app.extensions import db, bcrypt  # Ensure bcrypt is correctly imported
+from app.extensions import db, bcrypt
 from app.models import User
 
 @click.command('init-db')

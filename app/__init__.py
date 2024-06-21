@@ -1,5 +1,7 @@
 import os
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from .extensions import bcrypt, db, login_manager
 from .admin import setup_admin
@@ -26,6 +28,8 @@ from app.routes.auth.truckload import auth_truckload_bp
 from app.routes.auth.harvest_rig import auth_harvest_rig_bp
 from app.routes.trucker.trucker import trucker_bp
 from app.routes.operator.rig import operator_rig_bp
+
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True)
@@ -55,6 +59,7 @@ def create_app():
     Bootstrap(app)
     bcrypt.init_app(app)
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
     
     # Setup LoginManager

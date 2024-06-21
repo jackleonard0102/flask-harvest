@@ -22,6 +22,8 @@ def index():
     
     return render_template('admin/harvest_per_field.html', current_user=current_user, children_1=children_1, harvest_map=harvest_map, field_map=field_map, children_2=children_2, children_3=children_3)
 
+
+
 @admin_harvest_per_field_bp.route('/add_harvest_per_field_modal', methods=['POST'])
 @login_required
 def add_harvest_per_field_modal():
@@ -31,22 +33,44 @@ def add_harvest_per_field_modal():
 
     harvest_id = request.form['harvest_id']
     field_id = request.form['field_id']
-    yield_amount = request.form['yield_amount']
+    yield_amount = request.form.get('yield_amount')
+    yield_type = request.form.get('yield_type')
 
     # Validate inputs
-    if not harvest_id or not field_id or not yield_amount:
-        flash('All fields are required.')
+    if not harvest_id or not field_id:
+        flash('Harvest and Field are required.')
         return redirect(url_for('admin_harvest_per_field_bp.index'))
+
+    # Set default values if not provided
+    if not yield_amount:
+        yield_amount = 0.0
+    else:
+        try:
+            yield_amount = float(yield_amount)
+        except ValueError:
+            flash('Yield amount must be a valid number.')
+            return redirect(url_for('admin_harvest_per_field_bp.index'))
+    
+    if not yield_type:
+        yield_type = 0.0
+    else:
+        try:
+            yield_type = float(yield_type)
+        except ValueError:
+            flash('Yield type must be a valid number.')
+            return redirect(url_for('admin_harvest_per_field_bp.index'))
 
     new_harvest_per_field = HarvestPerField(
         harvest_id=harvest_id,
         field_id=field_id,
-        yield_amount=yield_amount
+        yield_amount=yield_amount,
+        yield_type=yield_type
     )
     db.session.add(new_harvest_per_field)
     db.session.commit()
     flash('Harvest Per Field successfully added!')
     return redirect(url_for('admin_harvest_per_field_bp.index'))
+
 
 
 @admin_harvest_per_field_bp.route('/edit_harvest_per_field/<int:harvest_per_field_id>', methods=['POST'])
@@ -59,20 +83,44 @@ def edit_harvest_per_field(harvest_per_field_id):
 
     harvest_id = request.form['harvest_id']
     field_id = request.form['field_id']
-    yield_amount = request.form['yield_amount']
+    yield_amount = request.form.get('yield_amount')
+    yield_type = request.form.get('yield_type')
 
     # Validate inputs
-    if not harvest_id or not field_id or not yield_amount:
-        flash('All fields are required.')
+    if not harvest_id or not field_id:
+        flash('Harvest and Field are required.')
         return redirect(url_for('admin_harvest_per_field_bp.index'))
+
+    # Set default values if not provided
+    if not yield_amount:
+        yield_amount = 0.0
+    else:
+        try:
+            yield_amount = float(yield_amount)
+        except ValueError:
+            flash('Yield amount must be a valid number.')
+            return redirect(url_for('admin_harvest_per_field_bp.index'))
+    
+    if not yield_type:
+        yield_type = 0.0
+    else:
+        try:
+            yield_type = float(yield_type)
+        except ValueError:
+            flash('Yield type must be a valid number.')
+            return redirect(url_for('admin_harvest_per_field_bp.index'))
 
     harvest_per_field.harvest_id = harvest_id
     harvest_per_field.field_id = field_id
     harvest_per_field.yield_amount = yield_amount
+    harvest_per_field.yield_type = yield_type
 
     db.session.commit()
     flash('Harvest Per Field successfully updated!')
     return redirect(url_for('admin_harvest_per_field_bp.index'))
+
+
+
 
 @admin_harvest_per_field_bp.route('/delete_harvest_per_field/<int:harvest_per_field_id>')
 @login_required

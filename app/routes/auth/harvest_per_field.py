@@ -39,16 +39,18 @@ def add_harvest_per_field_modal():
     harvest_id = request.form['harvest_id']
     field_id = request.form['field_id']
     yield_amount = request.form['yield_amount']
+    yield_type = request.form['yield_type']
 
     # Validate inputs
-    if not harvest_id or not field_id or not yield_amount:
+    if not harvest_id or not field_id:
         flash('All fields are required.')
         return redirect(url_for('auth_harvest_per_field_bp.index'))
 
     new_harvest_per_field = HarvestPerField(
         harvest_id=harvest_id,
         field_id=field_id,
-        yield_amount=yield_amount
+        yield_amount=yield_amount,
+        yield_type=yield_type
     )
     db.session.add(new_harvest_per_field)
     db.session.commit()
@@ -67,15 +69,17 @@ def edit_harvest_per_field(harvest_per_field_id):
     harvest_id = request.form['harvest_id']
     field_id = request.form['field_id']
     yield_amount = request.form['yield_amount']
+    yield_type = request.form['yield_type']
 
     # Validate inputs
-    if not harvest_id or not field_id or not yield_amount:
+    if not harvest_id or not field_id:
         flash('All fields are required.')
         return redirect(url_for('auth_harvest_per_field_bp.index'))
 
     harvest_per_field.harvest_id = harvest_id
     harvest_per_field.field_id = field_id
     harvest_per_field.yield_amount = yield_amount
+    harvest_per_field.yield_type = yield_type
 
     db.session.commit()
     flash('Harvest Per Field successfully updated!')

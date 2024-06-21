@@ -35,6 +35,7 @@
         <td class="text-center align-middle">{{ harvest_map[harvest_per_field.harvest_id] }}</td>
         <td class="text-center align-middle">{{ field_map[harvest_per_field.field_id] }}</td>
         <td class="text-center align-middle">{{ harvest_per_field.yield_amount }}</td>
+        <td class="text-center align-middle">{{ harvest_per_field.yield_type }}</td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"
@@ -117,7 +118,18 @@
                     class="form-control"
                     id="yield_amount{{ harvest_per_field.id }}"
                     name="yield_amount"
-                    value="{{ harvest_per_field.yield_amount }}" required
+                    value="{{ harvest_per_field.yield_amount }}" 
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="yield_type{{ harvest_per_field.id }}">Yield Type</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    class="form-control"
+                    id="yield_type{{ harvest_per_field.id }}"
+                    name="yield_type"
+                    value="{{ harvest_per_field.yield_type }}" 
                   />
                 </div>
               </div>
@@ -236,6 +248,16 @@
                 class="form-control"
                 id="yield_amount"
                 name="yield_amount" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="yield_type">Yield Type</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="yield_type"
+                name="yield_type" required
               />
             </div>
           </div>

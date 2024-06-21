@@ -25,6 +25,7 @@
         <th class="text-center">Harvest</th>
         <th class="text-center">Field</th>
         <th class="text-center">Yield Amount</th>
+        <th class="text-center">Yield Type</th>
         <th class="text-center">Actions</th>
       </tr>
     </thead>
@@ -35,6 +36,7 @@
         <td class="text-center align-middle">{{ harvest_map[harvest_per_field.harvest_id] }}</td>
         <td class="text-center align-middle">{{ field_map[harvest_per_field.field_id] }}</td>
         <td class="text-center align-middle">{{ harvest_per_field.yield_amount }}</td>
+        <td class="text-center align-middle">{{ harvest_per_field.yield_type }}</td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"
@@ -117,7 +119,17 @@
                     class="form-control"
                     id="yield_amount{{ harvest_per_field.id }}"
                     name="yield_amount"
-                    value="{{ harvest_per_field.yield_amount }}" required
+                    value="{{ harvest_per_field.yield_amount }}"
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="yield_type{{ harvest_per_field.id }}">Yield Type</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="yield_type{{ harvest_per_field.id }}"
+                    name="yield_type"
+                    value="{{ harvest_per_field.yield_type }}"
                   />
                 </div>
               </div>
@@ -235,7 +247,16 @@
                 step="0.01"
                 class="form-control"
                 id="yield_amount"
-                name="yield_amount" required
+                name="yield_amount"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="yield_type">Yield Type</label>
+              <input
+                type="text"
+                class="form-control"
+                id="yield_type"
+                name="yield_type"
               />
             </div>
           </div>

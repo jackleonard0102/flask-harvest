@@ -60,8 +60,8 @@ class HarvestAdmin(ModelView):
 
 
 class HarvestPerFieldAdmin(ModelView):
-    column_list = ('id', 'harvest_id', 'field_id', 'yield_amount')
-    form_columns = ('harvest_id', 'field_id', 'yield_amount')
+    column_list = ('id', 'harvest_id', 'field_id', 'yield_amount', 'yield_type')
+    form_columns = ('harvest_id', 'field_id', 'yield_amount', 'yield_type')
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.permission <= 1  # Admin and Superadmin
