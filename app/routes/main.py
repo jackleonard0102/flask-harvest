@@ -10,6 +10,8 @@ def home():
             return redirect(url_for('company.index'))
         elif current_user.permission == 1:
             return redirect(url_for('auth_user_bp.index'))
+        elif current_user.permission == 2:
+            return redirect(url_for('operator_rig_bp.index'))
         elif current_user.permission == 4:
             return redirect(url_for('trucker_bp.index'))
         else:

@@ -1,0 +1,125 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <h2>Harvest Rigs</h2>
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <input type="text" class="form-control w-50" id="searchBox" placeholder="Search rigs..." />
+  </div>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">No</th>
+        <th class="text-center">Name</th>
+        <th class="text-center">Year</th>
+        <th class="text-center">Serial Number</th>
+        <th class="text-center">Operator</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="rigTableBody">
+      {% for rig in children_1 %}
+      <tr data-rig-id="{{ rig.id }}">
+        <td class="text-center align-middle">{{ loop.index }}</td>
+        <td class="text-center align-middle">{{ rig.name }}</td>
+        <td class="text-center align-middle">{{ rig.year }}</td>
+        <td class="text-center align-middle">{{ rig.serial_number }}</td>
+        <td class="text-center align-middle operator-cell">
+          {{ rig.current_operator_id == current_user.id and current_user.username or '' }}
+        </td>
+        <td class="text-center align-middle">
+          <form method="POST" action="{{ url_for('operator_rig_bp.select_rig_ajax') }}" class="select-rig-form">
+            <input type="hidden" name="rig_id" value="{{ rig.id }}" />
+            <button type="submit" class="btn select-rig-button"
+              data-current-operator-id="{{ rig.current_operator_id }}"
+              data-current-user-id="{{ current_user.id }}">
+              {% if rig.current_operator_id == current_user.id %} Cancel {% else %} Select {% endif %}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const selectButtons = document.querySelectorAll(".select-rig-button");
+
+    // Check if any rig is currently assigned to the current user
+    let userHasRig = false;
+    selectButtons.forEach((button) => {
+      const currentOperatorId = button.getAttribute("data-current-operator-id");
+      const currentUserId = button.getAttribute("data-current-user-id");
+
+      if (currentOperatorId && currentOperatorId === currentUserId) {
+        button.classList.add("btn-danger");
+        button.classList.remove("btn-primary");
+        button.innerText = "Cancel";
+        userHasRig = true;
+      } else {
+        button.classList.add("btn-primary");
+      }
+    });
+
+    // Disable all other buttons if the user has a rig assigned
+    if (userHasRig) {
+      selectButtons.forEach((button) => {
+        const currentOperatorId = button.getAttribute("data-current-operator-id");
+        const currentUserId = button.getAttribute("data-current-user-id");
+
+        if (!currentOperatorId || currentOperatorId !== currentUserId) {
+          button.disabled = true;
+        }
+      });
+    }
+
+    selectButtons.forEach((button) => {
+      button.closest("form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const isCancel = button.innerText === "Cancel";
+
+        fetch(this.action, {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
+
+            const rigRow = document.querySelector(`tr[data-rig-id='${data.rig_id}']`);
+            const operatorCell = rigRow.querySelector(".operator-cell");
+
+            if (isCancel) {
+              selectButtons.forEach((btn) => {
+                btn.innerText = "Select";
+                btn.classList.add("btn-primary");
+                btn.classList.remove("btn-danger");
+                btn.disabled = false;
+              });
+              operatorCell.innerText = "";
+            } else {
+              selectButtons.forEach((btn) => {
+                if (btn !== button) {
+                  btn.disabled = true;
+                }
+              });
+              button.innerText = "Cancel";
+              button.classList.add("btn-danger");
+              button.classList.remove("btn-primary");
+              operatorCell.innerText = data.current_operator_name;
+            }
+          });
+      });
+    });
+  });
+</script>
+
+{% endblock %}

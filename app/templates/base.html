@@ -57,91 +57,107 @@
   </head>
   <body>
     {% if current_user.is_authenticated %}
-    <nav class="navbar navbar-expand-lg fixed-top">
-      <div class="container-fluid d-flex justify-content-around">
-        {% if current_user.permission == 0 %}
-        <!-- Superadmin Navbar -->
-        <a class="navbar-brand" href="{{ url_for('main.home') }}">Harvest</a>
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'company.index' %}active{% endif %}" aria-current="page" href="{{ url_for('company.index') }}">Company</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_user_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_user_bp.index') }}">User</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_farm_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_farm_bp.index') }}">Farm</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_field_bp.index') }}">Field</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_harvest_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_bp.index') }}">Harvest</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_harvest_per_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_per_field_bp.index') }}">Harvest per field</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_truck_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_truck_bp.index') }}">Truck</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_harvest_rig_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_rig_bp.index') }}">Harvest Rig</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'admin_truckload_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_truckload_bp.index') }}">Truck Load</a>
-          </li>
-        {% elif current_user.permission == 1 %}
-        <!-- User Navbar without Company link -->
-        <a class="navbar-brand" href="{{ url_for('main.home') }}">Harvest</a>
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_user_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_user_bp.index') }}">User</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_farm_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_farm_bp.index') }}">Farm</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_field_bp.index') }}">Field</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_harvest_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_bp.index') }}">Harvest</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_harvest_per_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_per_field_bp.index') }}">Harvest per field</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_truck_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_truck_bp.index') }}">Truck</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_harvest_rig_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_rig_bp.index') }}">Harvest Rig</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'auth_truckload_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_truckload_bp.index') }}">Truck Load</a>
-          </li>
-        {% elif current_user.permission == 4 %}
-        <!-- User Navbar without Company link -->
-        <a class="navbar-brand" href="{{ url_for('main.home') }}">Harvest</a>
-        {% endif %}
-          <div class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdownMenuLink"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              {{ current_user.email }}
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <li>
-                <a class="dropdown-item" href="{{ url_for('authentication.logout') }}"
-                  >Logout</a
-                >
-              </li>
-            </ul>
-          </div>
-        </ul>
+    <nav class="navbar navbar-expand-xl navbar-dark fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand px-5" href="{{ url_for('main.home') }}">Harvest</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse px-5" id="navbarNavDropdown">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {% if current_user.permission == 0 %}
+            <!-- Superadmin Navbar -->
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'company.index' %}active{% endif %}" aria-current="page" href="{{ url_for('company.index') }}">Company</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_user_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_user_bp.index') }}">User</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_farm_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_farm_bp.index') }}">Farm</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_field_bp.index') }}">Field</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_harvest_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_bp.index') }}">Harvest</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_harvest_per_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_per_field_bp.index') }}">Harvest per field</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_truck_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_truck_bp.index') }}">Truck</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_harvest_rig_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_harvest_rig_bp.index') }}">Harvest Rig</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'admin_truckload_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('admin_truckload_bp.index') }}">Truck Load</a>
+            </li>
+            {% elif current_user.permission == 1 %}
+            <!-- User Navbar without Company link -->
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_user_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_user_bp.index') }}">User</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_farm_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_farm_bp.index') }}">Farm</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_field_bp.index') }}">Field</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_harvest_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_bp.index') }}">Harvest</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_harvest_per_field_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_per_field_bp.index') }}">Harvest per field</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_truck_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_truck_bp.index') }}">Truck</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_harvest_rig_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_harvest_rig_bp.index') }}">Harvest Rig</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'auth_truckload_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('auth_truckload_bp.index') }}">Truck Load</a>
+            </li>
+            {% elif current_user.permission == 2 %}
+            <!-- Operator Navbar -->
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'operator_rig_bp.index' %}active{% endif %}" aria-current="page" href="{{ url_for('operator_rig_bp.index') }}">Harvest Rig</a>
+            </li>
+            {% elif current_user.permission == 4 %}
+            <!-- Trucker Navbar -->
+            <!-- Add specific links for trucker if needed -->
+            {% endif %}
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdownMenuLink"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {{ current_user.email }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('authentication.logout') }}">Logout</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
     {% endif %}
