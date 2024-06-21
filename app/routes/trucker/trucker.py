@@ -15,7 +15,7 @@ def index():
 
     children_1 = Truck.query.filter(
         (Truck.company_id == current_user.company_id) &
-        ((Truck.current_driver_id == None) | (Truck.current_driver_id == current_user.id))
+        ((Truck.current_driver_id == '') | (Truck.current_driver_id == current_user.id))
     ).all()
 
     children_2 = Customer.query.filter(
@@ -41,7 +41,7 @@ def select_truck():
 
     # If the truck is already selected by the current user, cancel the selection
     if truck.current_driver_id == current_user.id:
-        truck.current_driver_id = None
+        truck.current_driver_id = ''
         message = f'Truck {truck.name} successfully deselected by {current_user.username}!'
     else:
         # Update the truck's current driver to the current user
@@ -64,7 +64,7 @@ def select_truck_ajax():
 
     if truck.current_driver_id == current_user.id:
         # If the truck is already selected by the current user, deselect it
-        truck.current_driver_id = None
+        truck.current_driver_id = ''
     else:
         # Otherwise, select the truck for the current user
         truck.current_driver_id = current_user.id
@@ -81,7 +81,7 @@ def select_truck_ajax():
 def logout():
     trucks = Truck.query.filter_by(current_driver_id=current_user.id).all()
     for truck in trucks:
-        truck.current_driver_id = None
+        truck.current_driver_id = ''
     db.session.commit()
 
     logout_user()

@@ -14,7 +14,7 @@ def index():
 
     children_1 = HarvestRig.query.filter(
         (HarvestRig.company_id == current_user.company_id) &
-        ((HarvestRig.current_operator_id == None) | (HarvestRig.current_operator_id == current_user.id))
+        ((HarvestRig.current_operator_id == '') | (HarvestRig.current_operator_id == current_user.id))
     ).all()
     children_2 = Customer.query.filter(
         Customer.deleted_at.is_(None),
@@ -39,7 +39,7 @@ def select_rig():
 
     # If the rig is already selected by the current user, cancel the selection
     if rig.current_operator_id == current_user.id:
-        rig.current_operator_id = None
+        rig.current_operator_id = ''
         message = f'Rig {rig.name} successfully deselected by {current_user.username}!'
     else:
         # Update the rig's current operator to the current user
@@ -62,7 +62,7 @@ def select_rig_ajax():
 
     if rig.current_operator_id == current_user.id:
         # If the rig is already selected by the current user, deselect it
-        rig.current_operator_id = None
+        rig.current_operator_id = ''
     else:
         # Otherwise, select the rig for the current user
         rig.current_operator_id = current_user.id
@@ -79,7 +79,7 @@ def select_rig_ajax():
 def logout():
     rigs = HarvestRig.query.filter_by(current_operator_id=current_user.id).all()
     for rig in rigs:
-        rig.current_operator_id = None
+        rig.current_operator_id = ''
     db.session.commit()
 
     logout_user()

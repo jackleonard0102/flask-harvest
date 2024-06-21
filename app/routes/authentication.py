@@ -30,12 +30,12 @@ def login():
 def logout():
     trucks = Truck.query.filter_by(current_driver_id=current_user.id).all()
     for truck in trucks:
-        truck.current_driver_id = None
+        truck.current_driver_id = ''
     db.session.commit()
     
     rigs = HarvestRig.query.filter_by(current_operator_id=current_user.id).all()
     for rig in rigs:
-        rig.current_operator_id = None
+        rig.current_operator_id = ''
     db.session.commit()
     
     logout_user()
