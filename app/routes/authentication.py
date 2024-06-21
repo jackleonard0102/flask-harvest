@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, request, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app.forms.auth_forms import LoginForm
-from app.models import User
+from app.models import User, Truck
+from app.extensions import db
 
 auth_bp = Blueprint('authentication', __name__)
 
@@ -27,5 +28,10 @@ def login():
 @auth_bp.route('/logout')
 @login_required
 def logout():
+    trucks = Truck.query.filter_by(current_driver_id=current_user.id).all()
+    for truck in trucks:
+        truck.current_driver_id = None
+    db.session.commit()
+    
     logout_user()
     return redirect(url_for('authentication.login'))

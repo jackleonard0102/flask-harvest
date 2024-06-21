@@ -1,13 +1,9 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+{% block content %}
 <div class="container">
   <h2>Trucks</h2>
   <div class="d-flex justify-content-between align-items-center my-3">
-    <input
-      type="text"
-      class="form-control w-50"
-      id="searchBox"
-      placeholder="Search trucks..."
-    />
+    <input type="text" class="form-control w-50" id="searchBox" placeholder="Search trucks..." />
   </div>
 
   <table class="table">
@@ -29,30 +25,15 @@
         <td class="text-center align-middle">{{ truck.year }}</td>
         <td class="text-center align-middle">{{ truck.vin }}</td>
         <td class="text-center align-middle driver-cell">
-          {{ truck.current_driver_id and current_user.username or '' }}
+          {{ truck.current_driver_id == current_user.id and current_user.username or '' }}
         </td>
         <td class="text-center align-middle">
-          <form
-            method="POST"
-            action="{{ url_for('trucker_bp.select_truck_ajax') }}"
-            class="select-truck-form"
-          >
+          <form method="POST" action="{{ url_for('trucker_bp.select_truck_ajax') }}" class="select-truck-form">
             <input type="hidden" name="truck_id" value="{{ truck.id }}" />
-            <button
-              type="submit"
-              class="btn {% if truck.current_driver_id == current_user.id %}btn-danger{% else %}btn-primary{% endif %} select-truck-button"
-              {%
-              if
-              truck.current_driver_id
-              and
-              truck.current_driver_id
-              !="current_user.id"
-              %}disabled{%
-              endif
-              %}
-            >
-              {% if truck.current_driver_id == current_user.id %} Cancel {% else
-              %} Select {% endif %}
+            <button type="submit" class="btn select-truck-button"
+              data-current-driver-id="{{ truck.current_driver_id }}"
+              data-current-user-id="{{ current_user.id }}">
+              {% if truck.current_driver_id == current_user.id %} Cancel {% else %} Select {% endif %}
             </button>
           </form>
         </td>
@@ -64,16 +45,43 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const selectButtons = document.querySelectorAll(".select-truck-form");
+    const selectButtons = document.querySelectorAll(".select-truck-button");
 
-    selectButtons.forEach((form) => {
-      form.addEventListener("submit", function (event) {
+    // Check if any truck is currently assigned to the current user
+    let userHasTruck = false;
+    selectButtons.forEach((button) => {
+      const currentDriverId = button.getAttribute("data-current-driver-id");
+      const currentUserId = button.getAttribute("data-current-user-id");
+
+      if (currentDriverId && currentDriverId === currentUserId) {
+        button.classList.add("btn-danger");
+        button.classList.remove("btn-primary");
+        button.innerText = "Cancel";
+        userHasTruck = true;
+      } else {
+        button.classList.add("btn-primary");
+      }
+    });
+
+    // Disable all other buttons if the user has a truck assigned
+    if (userHasTruck) {
+      selectButtons.forEach((button) => {
+        const currentDriverId = button.getAttribute("data-current-driver-id");
+        const currentUserId = button.getAttribute("data-current-user-id");
+
+        if (!currentDriverId || currentDriverId !== currentUserId) {
+          button.disabled = true;
+        }
+      });
+    }
+
+    selectButtons.forEach((button) => {
+      button.closest("form").addEventListener("submit", function (event) {
         event.preventDefault();
-        const formData = new FormData(form);
-        const button = form.querySelector(".select-truck-button");
+        const formData = new FormData(this);
         const isCancel = button.innerText === "Cancel";
 
-        fetch(form.action, {
+        fetch(this.action, {
           method: "POST",
           body: formData,
           headers: {
@@ -87,35 +95,31 @@
               return;
             }
 
-            const truckRow = document.querySelector(
-              `tr[data-truck-id='${data.truck_id}']`
-            );
+            const truckRow = document.querySelector(`tr[data-truck-id='${data.truck_id}']`);
             const driverCell = truckRow.querySelector(".driver-cell");
 
             if (isCancel) {
-              // Reset buttons if a truck is deselected
-              selectButtons.forEach((frm) => {
-                const btn = frm.querySelector(".select-truck-button");
+              selectButtons.forEach((btn) => {
                 btn.innerText = "Select";
+                btn.classList.add("btn-primary");
+                btn.classList.remove("btn-danger");
                 btn.disabled = false;
               });
               driverCell.innerText = "";
             } else {
-              // Disable all buttons and set the clicked button to "Cancel"
-              selectButtons.forEach((frm) => {
-                const btn = frm.querySelector(".select-truck-button");
+              selectButtons.forEach((btn) => {
                 if (btn !== button) {
                   btn.disabled = true;
-                } else {
-                  btn.innerText = "Cancel";
-                  driverCell.innerText = data.current_driver_name;
                 }
               });
+              button.innerText = "Cancel";
+              button.classList.add("btn-danger");
+              button.classList.remove("btn-primary");
+              driverCell.innerText = data.current_driver_name;
             }
           });
       });
     });
   });
 </script>
-
 {% endblock %}

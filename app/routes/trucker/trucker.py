@@ -13,9 +13,16 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = Truck.query.filter((Truck.company_id == current_user.company_id) & ((Truck.current_driver_id == None) | (Truck.current_driver_id == current_user.id))).all()
+    children_1 = Truck.query.filter(
+        (Truck.company_id == current_user.company_id) &
+        ((Truck.current_driver_id == None) | (Truck.current_driver_id == current_user.id))
+    ).all()
 
-    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 0, Customer.id == current_user.company_id).all()
+    children_2 = Customer.query.filter(
+        Customer.deleted_at.is_(None),
+        Customer.status == 0,
+        Customer.id == current_user.company_id
+    ).all()
 
     # Create a dictionary to map company_id to company.name
     company_map = {customer.id: customer.name for customer in children_2}
@@ -45,7 +52,7 @@ def select_truck():
     flash(message)
 
     return redirect(url_for('trucker_bp.index'))
-  
+
 @trucker_bp.route('/select_truck_ajax', methods=['POST'])
 @login_required
 def select_truck_ajax():
@@ -72,10 +79,10 @@ def select_truck_ajax():
 @trucker_bp.route('/logout')
 @login_required
 def logout():
-    truck = Truck.query.filter_by(current_driver_id=current_user.id).first()
-    if truck:
+    trucks = Truck.query.filter_by(current_driver_id=current_user.id).all()
+    for truck in trucks:
         truck.current_driver_id = None
-        db.session.commit()
+    db.session.commit()
 
     logout_user()
     return redirect(url_for('main.home'))
