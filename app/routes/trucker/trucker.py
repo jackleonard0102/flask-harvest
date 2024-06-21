@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_required, current_user
-from app.models import Truck, Customer, User
+from flask_login import login_required, logout_user, current_user
+from app.models import Truck, Customer
 from app.extensions import db
+from flask import jsonify
 
 trucker_bp = Blueprint('trucker_bp', __name__)
 
@@ -12,82 +13,69 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = Truck.query.filter(Truck.company_id == current_user.company_id).all()
-    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active', Customer.id == current_user.company_id).all()
-    drivers = User.query.filter(User.company_id == current_user.company_id, User.permission == 4).all()
-    
+    children_1 = Truck.query.filter((Truck.company_id == current_user.company_id) & ((Truck.current_driver_id == None) | (Truck.current_driver_id == current_user.id))).all()
+
+    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 0, Customer.id == current_user.company_id).all()
+
     # Create a dictionary to map company_id to company.name
     company_map = {customer.id: customer.name for customer in children_2}
-    
-    return render_template('trucker/trucker.html', current_user=current_user, children_1=children_1, children_2=children_2, company_map=company_map, drivers=drivers)
 
+    return render_template('trucker/trucker.html', current_user=current_user, children_1=children_1, children_2=children_2, company_map=company_map)
 
-@trucker_bp.route('/add_trucker_modal', methods=['POST'])
+@trucker_bp.route('/select_truck', methods=['POST'])
 @login_required
-def add_truck_modal():
+def select_truck():
     if current_user.permission != 4:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    company_id = request.form['company_id']
-    name = request.form['name']
-    year = request.form['year']
-    vin = request.form['vin']
-    driver = request.form['driver']
-
-    if not name or not year or not vin:
-        flash('All fields are required.')
-        return redirect(url_for('trucker_bp.index'))
-
-    new_truck = Truck(
-        name=name,
-        year=year,
-        vin=vin,
-        current_driver_id=driver,
-        company_id=company_id
-    )
-    db.session.add(new_truck)
-    db.session.commit()
-    flash('Truck successfully added!')
-    return redirect(url_for('trucker_bp.index'))
-
-
-@trucker_bp.route('/edit_trucker/<int:truck_id>', methods=['POST'])
-@login_required
-def edit_truck(truck_id):
+    truck_id = request.form['truck_id']
     truck = Truck.query.get_or_404(truck_id)
-    if current_user.permission != 4:  
-        flash('Unauthorized access')
-        return redirect(url_for('trucker_bp.index'))
 
-    name = request.form['name']
-    year = request.form['year']
-    vin = request.form['vin']
-    driver = request.form['driver']
-
-    if not name or not year or not vin:
-        flash('All fields are required.')
-        return redirect(url_for('trucker_bp.index'))
-
-    truck.name = name
-    truck.year = year
-    truck.vin = vin
-    truck.current_driver_id = driver
+    # If the truck is already selected by the current user, cancel the selection
+    if truck.current_driver_id == current_user.id:
+        truck.current_driver_id = None
+        message = f'Truck {truck.name} successfully deselected by {current_user.username}!'
+    else:
+        # Update the truck's current driver to the current user
+        truck.current_driver_id = current_user.id
+        message = f'Truck {truck.name} successfully selected by {current_user.username}!'
 
     db.session.commit()
-    flash('Truck successfully updated!')
+    flash(message)
+
     return redirect(url_for('trucker_bp.index'))
-
-
-@trucker_bp.route('/delete_trucker/<int:truck_id>')
+  
+@trucker_bp.route('/select_truck_ajax', methods=['POST'])
 @login_required
-def delete_truck(truck_id):
-    truck = Truck.query.get_or_404(truck_id)
-    if current_user.permission != 4:  
-        flash('Unauthorized access')
-        return redirect(url_for('trucker_bp.index'))
+def select_truck_ajax():
+    if current_user.permission != 4:
+        return jsonify({'error': 'Unauthorized access'}), 403
 
-    db.session.delete(truck)
+    truck_id = request.form['truck_id']
+    truck = Truck.query.get_or_404(truck_id)
+
+    if truck.current_driver_id == current_user.id:
+        # If the truck is already selected by the current user, deselect it
+        truck.current_driver_id = None
+    else:
+        # Otherwise, select the truck for the current user
+        truck.current_driver_id = current_user.id
+
     db.session.commit()
-    flash('Truck successfully deleted!')
-    return redirect(url_for('trucker_bp.index'))
+    return jsonify({
+        'truck_id': truck.id,
+        'current_driver_id': truck.current_driver_id,
+        'current_driver_name': current_user.username if truck.current_driver_id == current_user.id else ''
+    })
+
+@trucker_bp.route('/logout')
+@login_required
+def logout():
+    truck = Truck.query.filter_by(current_driver_id=current_user.id).first()
+    if truck:
+        truck.current_driver_id = None
+        db.session.commit()
+
+    logout_user()
+    return redirect(url_for('main.home'))

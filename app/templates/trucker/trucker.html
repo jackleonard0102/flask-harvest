@@ -9,13 +9,6 @@
       id="searchBox"
       placeholder="Search trucks..."
     />
-    <button
-      class="btn btn-success"
-      data-bs-toggle="modal"
-      data-bs-target="#addTruckModal"
-    >
-      Add Truck
-    </button>
   </div>
 
   <table class="table">
@@ -31,291 +24,82 @@
     </thead>
     <tbody id="truckTableBody">
       {% for truck in children_1 %}
-      <tr>
+      <tr data-truck-id="{{ truck.id }}">
         <td class="text-center align-middle">{{ loop.index }}</td>
         <td class="text-center align-middle">{{ truck.name }}</td>
         <td class="text-center align-middle">{{ truck.year }}</td>
         <td class="text-center align-middle">{{ truck.vin }}</td>
-        <td class="text-center align-middle">{{ truck.current_driver_id }}</td>
+        <td class="text-center align-middle driver-cell">{{ truck.current_driver_id and current_user.username or '' }}</td>
         <td class="text-center align-middle">
-          <button
-            class="btn btn-sm"
-            style="background-color: transparent; border: none"
-            data-bs-toggle="modal"
-            data-bs-target="#editTruckModal{{ truck.id }}"
-          >
-            <i class="bi bi-pencil-square text-primary fs-4"></i>
-          </button>
-          <button
-            class="btn btn-sm"
-            style="background-color: transparent; border: none"
-            data-bs-toggle="modal"
-            data-bs-target="#deleteTruckModal{{ truck.id }}"
-          >
-            <i class="bi bi-trash text-danger fs-4"></i>
-          </button>
+          <form method="POST" action="{{ url_for('trucker_bp.select_truck_ajax') }}" class="select-truck-form">
+            <input type="hidden" name="truck_id" value="{{ truck.id }}">
+            <button type="submit" class="btn btn-primary select-truck-button" 
+                    {% if truck.current_driver_id and truck.current_driver_id != current_user.id %}disabled{% endif %}>
+              {% if truck.current_driver_id == current_user.id %}
+                Cancel
+              {% else %}
+                Select
+              {% endif %}
+            </button>
+          </form>
         </td>
       </tr>
-
-      <!-- Edit Truck Modal -->
-      <div
-        class="modal fade"
-        id="editTruckModal{{ truck.id }}"
-        tabindex="-1"
-        aria-labelledby="editTruckModalLabel{{ truck.id }}"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <form
-              method="POST"
-              action="{{ url_for('trucker_bp.edit_truck', truck_id=truck.id) }}"
-            >
-              <div class="modal-header">
-                <h5 class="modal-title" id="editTruckModalLabel{{ truck.id }}">
-                  Edit Truck
-                </h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <div class="form-group mb-3">
-                  <label for="company{{ truck.id }}">Company</label>
-                  <select
-                    class="form-control"
-                    id="company{{ truck.id }}"
-                    name="company_id"
-                  >
-                    {% for customer in children_2 %}
-                    <option value="{{ customer.id }}" {% if customer.id == truck.company_id %}selected{% endif %}>
-                      {{ customer.name }}
-                    </option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="form-group mb-3">
-                  <label for="name{{ truck.id }}">Name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="name{{ truck.id }}"
-                    name="name"
-                    value="{{ truck.name }}" required
-                  />
-                </div>
-                <div class="form-group mb-3">
-                  <label for="year{{ truck.id }}">Year</label>
-                  <input
-                    type="year"
-                    class="form-control"
-                    id="year{{ truck.id }}"
-                    name="year"
-                    value="{{ truck.year }}" required
-                  />
-                </div>
-                <div class="form-group mb-3">
-                  <label for="vin{{ truck.id }}">Vin</label>
-                  <input
-                    type="vin"
-                    class="form-control"
-                    id="vin{{ truck.id }}"
-                    name="vin"
-                    value="{{ truck.vin }}" required
-                  />
-                </div>
-                <div class="form-group mb-3">
-                  <label for="driver{{ truck.id }}">Driver</label>
-                  <select
-                    class="form-control"
-                    id="driver{{ truck.id }}"
-                    name="driver"
-                  >
-                    {% for driver in drivers %}
-                    <option value="{{ driver.id }}" {% if driver.id == truck.current_driver_id %}selected{% endif %}>
-                      {{ driver.name }}
-                    </option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">
-                  Update
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- Delete Truck Modal -->
-      <div
-        class="modal fade"
-        id="deleteTruckModal{{ truck.id }}"
-        tabindex="-1"
-        aria-labelledby="deleteTruckModalLabel{{ truck.id }}"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="deleteTruckModalLabel{{ truck.id }}">
-                Confirm Delete
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              Are you sure you want to delete the truck "{{ truck.name }}"?
-            </div>
-            <div class="modal-footer">
-              <a
-                href="{{ url_for('trucker_bp.delete_truck', truck_id=truck.id) }}"
-                class="btn btn-danger"
-              >
-                Delete
-              </a>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
       {% endfor %}
     </tbody>
   </table>
-
-  <!-- Add Truck Modal -->
-  <div
-    class="modal fade"
-    id="addTruckModal"
-    tabindex="-1"
-    aria-labelledby="addTruckModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form method="POST" action="{{ url_for('trucker_bp.add_truck_modal') }}">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addTruckModalLabel">Add Truck</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group mb-3">
-              <label for="company">Company</label>
-              <select
-                class="form-control"
-                id="company"
-                name="company_id"
-              >
-                {% for customer in children_2 %}
-                <option value="{{ customer.id }}">
-                  {{ customer.name }}
-                </option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="form-group mb-3">
-              <label for="name">Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name" required
-              />
-            </div>
-            <div class="form-group mb-3">
-              <label for="year">Year</label>
-              <input
-                type="year"
-                class="form-control"
-                id="year"
-                name="year" required
-              />
-            </div>
-            <div class="form-group mb-3">
-              <label for="vin">Vin</label>
-              <input
-                type="vin"
-                class="form-control"
-                id="vin"
-                name="vin" required
-              />
-            </div>
-            <div class="form-group mb-3">
-              <label for="driver">Driver</label>
-              <select
-                class="form-control"
-                id="driver"
-                name="driver"
-              >
-                {% for driver in drivers %}
-                <option value="{{ driver.id }}">
-                  {{ driver.name }}
-                </option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Add</button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 </div>
+
 <script>
-  const searchBox = document.getElementById('searchBox');
-  const truckTableBody = document.getElementById('truckTableBody');
+  document.addEventListener('DOMContentLoaded', function() {
+    const selectButtons = document.querySelectorAll('.select-truck-form');
 
-  searchBox.addEventListener('input', () => {
-    const searchTerm = searchBox.value.toLowerCase();
-    const rows = truckTableBody.querySelectorAll('tr');
+    selectButtons.forEach(form => {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const button = form.querySelector('.select-truck-button');
+        const isCancel = button.innerText === "Cancel";
 
-    rows.forEach(row => {
-      const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-      const year = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
-      const vin = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+              return;
+            }
 
-      if (name.includes(searchTerm) || year.includes(searchTerm) || vin.includes(searchTerm)) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
+            const truckRow = document.querySelector(`tr[data-truck-id='${data.truck_id}']`);
+            const driverCell = truckRow.querySelector('.driver-cell');
+
+            if (isCancel) {
+              // Reset buttons if a truck is deselected
+              selectButtons.forEach(frm => {
+                const btn = frm.querySelector('.select-truck-button');
+                btn.innerText = "Select";
+                btn.disabled = false;
+              });
+              driverCell.innerText = '';
+            } else {
+              // Disable all buttons and set the clicked button to "Cancel"
+              selectButtons.forEach(frm => {
+                const btn = frm.querySelector('.select-truck-button');
+                if (btn !== button) {
+                  btn.disabled = true;
+                } else {
+                  btn.innerText = "Cancel";
+                  driverCell.innerText = data.current_driver_name;
+                }
+              });
+            }
+          });
+      });
     });
   });
 </script>
+
 {% endblock %}
