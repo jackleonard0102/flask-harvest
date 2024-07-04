@@ -26,7 +26,6 @@ class User(UserMixin, TimestampMixin, db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
     permission = db.Column(db.Integer, nullable=False)  # 0: Superadmin, 1: Admin, 2: Subuser
-    parent_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def verify_password(self, password):
         # Ensure password_hash is not None or empty
