@@ -22,8 +22,6 @@ def index():
     
     return render_template('admin/harvest_per_field.html', current_user=current_user, children_1=children_1, harvest_map=harvest_map, field_map=field_map, children_2=children_2, children_3=children_3)
 
-
-
 @admin_harvest_per_field_bp.route('/add_harvest_per_field_modal', methods=['POST'])
 @login_required
 def add_harvest_per_field_modal():
@@ -50,15 +48,6 @@ def add_harvest_per_field_modal():
         except ValueError:
             flash('Yield amount must be a valid number.')
             return redirect(url_for('admin_harvest_per_field_bp.index'))
-    
-    if not yield_type:
-        yield_type = 0.0
-    else:
-        try:
-            yield_type = float(yield_type)
-        except ValueError:
-            flash('Yield type must be a valid number.')
-            return redirect(url_for('admin_harvest_per_field_bp.index'))
 
     new_harvest_per_field = HarvestPerField(
         harvest_id=harvest_id,
@@ -70,8 +59,6 @@ def add_harvest_per_field_modal():
     db.session.commit()
     flash('Harvest Per Field successfully added!')
     return redirect(url_for('admin_harvest_per_field_bp.index'))
-
-
 
 @admin_harvest_per_field_bp.route('/edit_harvest_per_field/<int:harvest_per_field_id>', methods=['POST'])
 @login_required
@@ -100,15 +87,6 @@ def edit_harvest_per_field(harvest_per_field_id):
         except ValueError:
             flash('Yield amount must be a valid number.')
             return redirect(url_for('admin_harvest_per_field_bp.index'))
-    
-    if not yield_type:
-        yield_type = 0.0
-    else:
-        try:
-            yield_type = float(yield_type)
-        except ValueError:
-            flash('Yield type must be a valid number.')
-            return redirect(url_for('admin_harvest_per_field_bp.index'))
 
     harvest_per_field.harvest_id = harvest_id
     harvest_per_field.field_id = field_id
@@ -118,9 +96,6 @@ def edit_harvest_per_field(harvest_per_field_id):
     db.session.commit()
     flash('Harvest Per Field successfully updated!')
     return redirect(url_for('admin_harvest_per_field_bp.index'))
-
-
-
 
 @admin_harvest_per_field_bp.route('/delete_harvest_per_field/<int:harvest_per_field_id>')
 @login_required
