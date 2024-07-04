@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import Truck, Customer
+from app.models import Truck, Customer, User
 from app.extensions import db
 
 admin_truck_bp = Blueprint('admin_truck_bp', __name__)
@@ -12,13 +12,14 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = Truck.query.all()
-    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active').all()
+    trucks = Truck.query.all()
+    companies = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active').all()
+    truckers = User.query.filter(User.permission == 4).all()
     
     # Create a dictionary to map company_id to company.name
-    company_map = {customer.id: customer.name for customer in children_2}
+    company_map = {customer.id: customer.name for customer in companies}
     
-    return render_template('admin/truck.html', current_user=current_user, children_1=children_1, children_2=children_2, company_map=company_map)
+    return render_template('admin/truck.html', current_user=current_user, trucks=trucks, companies=companies, truckers=truckers, company_map=company_map)
 
 
 @admin_truck_bp.route('/add_truck_modal', methods=['POST'])

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, jsonify, request
 from flask_login import login_required, current_user
 from app.models import HarvestPerField, Harvest, FarmField
 from app.extensions import db
@@ -8,7 +8,7 @@ admin_harvest_per_field_bp = Blueprint('admin_harvest_per_field_bp', __name__)
 @admin_harvest_per_field_bp.route('/admin/harvest_per_field')
 @login_required
 def index():
-    if current_user.permission != 0:  # Suppose 0 and 1 are permissions for superadmin and admin
+    if current_user.permission != 0: 
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -109,3 +109,14 @@ def delete_harvest_per_field(harvest_per_field_id):
     db.session.commit()
     flash('Harvest Per Field successfully deleted!')
     return redirect(url_for('admin_harvest_per_field_bp.index'))
+
+@admin_harvest_per_field_bp.route('/get_fields_by_harvest', methods=['GET'])
+def get_fields_by_harvest():
+    harvest_id = request.args.get('harvest_id')
+    if harvest_id:
+        harvest = Harvest.query.get(harvest_id)
+        if harvest:
+            fields = FarmField.query.filter_by(farm_id=harvest.farm_id).all()
+            fields_data = [{'id': field.id, 'name': field.name} for field in fields]
+            return jsonify({'fields': fields_data})
+    return jsonify({'fields': []})

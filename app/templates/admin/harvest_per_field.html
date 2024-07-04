@@ -86,9 +86,10 @@
                 <div class="form-group mb-3">
                   <label for="harvest{{ harvest_per_field.id }}">Harvest</label>
                   <select
-                    class="form-control"
+                    class="form-control harvest-dropdown"
                     id="harvest{{ harvest_per_field.id }}"
                     name="harvest_id" required
+                    data-field-dropdown-id="field{{ harvest_per_field.id }}"
                   >
                     {% for harvest in children_2 %}
                     <option value="{{ harvest.id }}" {% if harvest.id == harvest_per_field.harvest_id %}selected{% endif %}>
@@ -104,11 +105,7 @@
                     id="field{{ harvest_per_field.id }}"
                     name="field_id" required
                   >
-                    {% for field in children_3 %}
-                    <option value="{{ field.id }}" {% if field.id == harvest_per_field.field_id %}selected{% endif %}>
-                      {{ field.name }}
-                    </option>
-                    {% endfor %}
+                    <!-- Fields will be populated dynamically -->
                   </select>
                 </div>
                 <div class="form-group mb-3">
@@ -219,9 +216,10 @@
             <div class="form-group mb-3">
               <label for="harvest">Harvest</label>
               <select
-                class="form-control"
+                class="form-control harvest-dropdown"
                 id="harvest"
                 name="harvest_id"
+                data-field-dropdown-id="field"
               >
                 {% for harvest in children_2 %}
                 <option value="{{ harvest.id }}">{{ harvest.name }}</option>
@@ -234,10 +232,9 @@
                 class="form-control"
                 id="field"
                 name="field_id"
+                required
               >
-                {% for field in children_3 %}
-                <option value="{{ field.id }}">{{ field.name }}</option>
-                {% endfor %}
+                <!-- Fields will be populated dynamically -->
               </select>
             </div>
             <div class="form-group mb-3">
@@ -261,7 +258,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary">Add</button>
             <button
               type="button"
               class="btn btn-secondary"
@@ -277,15 +274,38 @@
 </div>
 
 <script>
-  document.getElementById("searchBox").addEventListener("input", function () {
-    const searchValue = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#harvestPerFieldTableBody tr");
-    rows.forEach((row) => {
-      const cells = row.querySelectorAll("td");
-      const match = Array.from(cells).some((cell) =>
-        cell.innerText.toLowerCase().includes(searchValue)
-      );
-      row.style.display = match ? "" : "none";
+  $(document).ready(function() {
+    function fetchFields(harvestId, fieldDropdownId) {
+      $.ajax({
+        url: "{{ url_for('admin_harvest_per_field_bp.get_fields_by_harvest') }}",
+        type: "GET",
+        data: { harvest_id: harvestId },
+        success: function(response) {
+          var fieldDropdown = $("#" + fieldDropdownId);
+          fieldDropdown.empty();
+          response.fields.forEach(function(field) {
+            fieldDropdown.append(
+              $("<option></option>")
+                .attr("value", field.id)
+                .text(field.name)
+            );
+          });
+        },
+        error: function(xhr, status, error) {
+          console.error("Failed to fetch fields:", error);
+        }
+      });
+    }
+
+    $(".harvest-dropdown").change(function() {
+      var harvestId = $(this).val();
+      var fieldDropdownId = $(this).data("field-dropdown-id");
+      fetchFields(harvestId, fieldDropdownId);
+    });
+
+    // Trigger change event to load fields for all existing harvest dropdowns
+    $(".harvest-dropdown").each(function() {
+      $(this).trigger("change");
     });
   });
 </script>

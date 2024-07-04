@@ -31,7 +31,7 @@
       </tr>
     </thead>
     <tbody id="truckTableBody">
-      {% for truck in children_1 %}
+      {% for truck in trucks %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
         <td class="text-center align-middle">{{ company_map[truck.company_id] }}</td>
@@ -92,7 +92,7 @@
                     id="company{{ truck.id }}"
                     name="company_id"
                   >
-                    {% for customer in children_2 %}
+                    {% for customer in companies %}
                     <option value="{{ customer.id }}" {% if customer.id == truck.company_id %}selected{% endif %}>
                       {{ customer.name }}
                     </option>
@@ -231,7 +231,7 @@
                 id="company"
                 name="company_id"
               >
-                {% for customer in children_2 %}
+                {% for customer in companies %}
                 <option value="{{ customer.id }}">{{ customer.name }}</option>
                 {% endfor %}
               </select>
