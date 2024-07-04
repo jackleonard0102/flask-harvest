@@ -38,7 +38,7 @@
         <td class="text-center align-middle">{{ truck.name }}</td>
         <td class="text-center align-middle">{{ truck.year }}</td>
         <td class="text-center align-middle">{{ truck.vin }}</td>
-        <td class="text-center align-middle">{{ truck.current_driver_id }}</td>
+        <td class="text-center align-middle">{{ trucker_map.get(truck.current_driver_id, 'No Driver') }}</td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"
@@ -60,38 +60,18 @@
       </tr>
 
       <!-- Edit Truck Modal -->
-      <div
-        class="modal fade"
-        id="editTruckModal{{ truck.id }}"
-        tabindex="-1"
-        aria-labelledby="editFarbModalLabel{{ truck.id }}"
-        aria-hidden="true"
-      >
+      <div class="modal fade" id="editTruckModal{{ truck.id }}" tabindex="-1" aria-labelledby="editTruckModalLabel{{ truck.id }}" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
-            <form
-              method="POST"
-              action="{{ url_for('admin_truck_bp.edit_truck', truck_id=truck.id) }}"
-            >
+            <form method="POST" action="{{ url_for('admin_truck_bp.edit_truck', truck_id=truck.id) }}">
               <div class="modal-header">
-                <h5 class="modal-title" id="editTruckModalLabel{{ truck.id }}">
-                  Edit Truck
-                </h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
+                <h5 class="modal-title" id="editTruckModalLabel{{ truck.id }}">Edit Truck</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
                   <label for="company{{ truck.id }}">Company</label>
-                  <select
-                    class="form-control"
-                    id="company{{ truck.id }}"
-                    name="company_id"
-                  >
+                  <select class="form-control" id="company{{ truck.id }}" name="company_id" onchange="populateDrivers('company{{ truck.id }}', 'driver{{ truck.id }}')">
                     {% for customer in companies %}
                     <option value="{{ customer.id }}" {% if customer.id == truck.company_id %}selected{% endif %}>
                       {{ customer.name }}
@@ -101,56 +81,31 @@
                 </div>
                 <div class="form-group mb-3">
                   <label for="name{{ truck.id }}">Name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="name{{ truck.id }}"
-                    name="name"
-                    value="{{ truck.name }}" required
-                  />
+                  <input type="text" class="form-control" id="name{{ truck.id }}" name="name" value="{{ truck.name }}" required />
                 </div>
                 <div class="form-group mb-3">
                   <label for="year{{ truck.id }}">Year</label>
-                  <input
-                    type="year"
-                    class="form-control"
-                    id="year{{ truck.id }}"
-                    name="year"
-                    value="{{ truck.year }}" required
-                  />
+                  <input type="year" class="form-control" id="year{{ truck.id }}" name="year" value="{{ truck.year }}" required />
                 </div>
                 <div class="form-group mb-3">
                   <label for="vin{{ truck.id }}">Vin</label>
-                  <input
-                    type="vin"
-                    class="form-control"
-                    id="vin{{ truck.id }}"
-                    name="vin"
-                    value="{{ truck.vin }}" required
-                  />
+                  <input type="vin" class="form-control" id="vin{{ truck.id }}" name="vin" value="{{ truck.vin }}" required />
                 </div>
                 <div class="form-group mb-3">
                   <label for="driver{{ truck.id }}">Driver</label>
-                  <input
-                    type="driver"
-                    class="form-control"
-                    id="driver{{ truck.id }}"
-                    name="driver"
-                    value="{{ truck.current_driver_id }}"
-                  />
+                  <select class="form-control" id="driver{{ truck.id }}" name="driver">
+                    <option value="">Select a driver</option>
+                    {% for trucker in truckers %}
+                    <option value="{{ trucker.id }}" {% if trucker.id == truck.current_driver_id %}selected{% endif %}>
+                      {{ trucker.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">
-                  Update
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Cancel
-                </button>
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               </div>
             </form>
           </div>
@@ -158,42 +113,19 @@
       </div>
 
       <!-- Delete Truck Modal -->
-      <div
-        class="modal fade"
-        id="deleteTruckModal{{ truck.id }}"
-        tabindex="-1"
-        aria-labelledby="deleteTruckModalLabel{{ truck.id }}"
-        aria-hidden="true"
-      >
+      <div class="modal fade" id="deleteTruckModal{{ truck.id }}" tabindex="-1" aria-labelledby="deleteTruckModalLabel{{ truck.id }}" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="deleteTruckModalLabel{{ truck.id }}">
-                Confirm Delete
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
+              <h5 class="modal-title" id="deleteTruckModalLabel{{ truck.id }}">Confirm Delete</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               Are you sure you want to delete truck {{ truck.name }}?
             </div>
             <div class="modal-footer">
-              <a
-                href="{{ url_for('admin_truck_bp.delete_truck', truck_id=truck.id) }}"
-                class="btn btn-danger"
-                >Delete</a
-              >
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Cancel
-              </button>
+              <a href="{{ url_for('admin_truck_bp.delete_truck', truck_id=truck.id) }}" class="btn btn-danger">Delete</a>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>
@@ -204,33 +136,18 @@
   </table>
 
   <!-- Add Truck Modal -->
-  <div
-    class="modal fade"
-    id="addTruckModal"
-    tabindex="-1"
-    aria-labelledby="addTruckModalLabel"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="addTruckModal" tabindex="-1" aria-labelledby="addTruckModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <form method="POST" action="{{ url_for('admin_truck_bp.add_truck_modal') }}">
           <div class="modal-header">
             <h5 class="modal-title" id="addTruckModalLabel">Add New Truck</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="form-group mb-3">
               <label for="company">Company</label>
-              <select
-                class="form-control"
-                id="company"
-                name="company_id"
-              >
+              <select class="form-control" id="company" name="company_id" onchange="populateDrivers('company', 'driver')">
                 {% for customer in companies %}
                 <option value="{{ customer.id }}">{{ customer.name }}</option>
                 {% endfor %}
@@ -238,50 +155,27 @@
             </div>
             <div class="form-group mb-3">
               <label for="name">Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name" required
-              />
+              <input type="text" class="form-control" id="name" name="name" required />
             </div>
             <div class="form-group mb-3">
               <label for="year">Year</label>
-              <input
-                type="year"
-                class="form-control"
-                id="year"
-                name="year" required
-              />
+              <input type="year" class="form-control" id="year" name="year" required />
             </div>
             <div class="form-group mb-3">
               <label for="vin">Vin</label>
-              <input
-                type="vin"
-                class="form-control"
-                id="vin"
-                name="vin" required
-              />
+              <input type="vin" class="form-control" id="vin" name="vin" required />
             </div>
             <div class="form-group mb-3">
               <label for="driver">Driver</label>
-              <input
-                type="driver"
-                class="form-control"
-                id="driver"
-                name="driver"
-              />
+              <select class="form-control" id="driver" name="driver">
+                <option value="">Select a driver</option>
+                <!-- Options will be populated by JavaScript -->
+              </select>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Create</button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Cancel
-            </button>
+            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           </div>
         </form>
       </div>
@@ -300,6 +194,43 @@
       );
       row.style.display = match ? "" : "none";
     });
+  });
+</script>
+
+<script>
+  const truckers = {{ truckers|tojson }};
+
+  function populateDrivers(companyIdElementId, driverIdElementId) {
+    const companyId = document.getElementById(companyIdElementId).value;
+    const driverSelect = document.getElementById(driverIdElementId);
+  
+    // Clear existing options
+    driverSelect.innerHTML = '';
+  
+    // Add empty default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Select a driver';
+    driverSelect.appendChild(defaultOption);
+  
+    // Filter truckers by company ID and create new options
+    truckers.filter(trucker => trucker.company_id == companyId)
+      .forEach(trucker => {
+        const option = document.createElement('option');
+        option.value = trucker.id;
+        option.textContent = trucker.name;
+        driverSelect.appendChild(option);
+      });
+  }
+  
+
+  // Initialize driver dropdowns for add modal
+  populateDrivers('company', 'driver');
+
+  // Initialize driver dropdowns for edit modals
+  document.querySelectorAll('[id^=company]').forEach(selectElement => {
+    const truckId = selectElement.id.replace('company', '');
+    populateDrivers(`company${truckId}`, `driver${truckId}`);
   });
 </script>
 {% endblock %}
