@@ -22,8 +22,8 @@
     <thead class="thead-dark">
       <tr>
         <th class="text-center">No</th>
+        <th class="text-center">Harvest</th>
         <th class="text-center">Farm</th>
-        <th class="text-center">Harvest Name</th>
         <th class="text-center">Date</th>
         <th class="text-center">Actions</th>
       </tr>
@@ -32,8 +32,8 @@
       {% for harvest in children_1 %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
-        <td class="text-center align-middle">{{ farm_map[harvest.farm_id] }}</td>
         <td class="text-center align-middle">{{ harvest.name }}</td>
+        <td class="text-center align-middle">{{ farm_map[harvest.farm_id] }}</td>
         <td class="text-center align-middle">{{ harvest.date.strftime('%Y-%m-%d') }}</td>
         <td class="text-center align-middle">
           <button
@@ -92,16 +92,6 @@
                   />
                 </div>
                 <div class="form-group mb-3">
-                  <label for="date{{ harvest.id }}">Date</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    id="date{{ harvest.id }}"
-                    name="date"
-                    value="{{ harvest.date.strftime('%Y-%m-%d') }}" required
-                  />
-                </div>
-                <div class="form-group mb-3">
                   <label for="farm{{ harvest.id }}">Farm</label>
                   <select
                     class="form-control"
@@ -114,6 +104,16 @@
                     </option>
                     {% endfor %}
                   </select>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="date{{ harvest.id }}">Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="date{{ harvest.id }}"
+                    name="date"
+                    value="{{ harvest.date.strftime('%Y-%m-%d') }}" required
+                  />
                 </div>
               </div>
               <div class="modal-footer">
@@ -200,6 +200,15 @@
           </div>
           <div class="modal-body">
             <div class="form-group mb-3">
+              <label for="name">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name" required
+              />
+            </div>
+            <div class="form-group mb-3">
               <label for="farm">Farm</label>
               <select
                 class="form-control"
@@ -210,15 +219,6 @@
                 <option value="{{ farm.id }}">{{ farm.name }}</option>
                 {% endfor %}
               </select>
-            </div>
-            <div class="form-group mb-3">
-              <label for="name">Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name" required
-              />
             </div>
             <div class="form-group mb-3">
               <label for="date">Date</label>

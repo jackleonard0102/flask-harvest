@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, jsonify, request
 from flask_login import login_required, current_user
-from app.models import HarvestPerField, Harvest, FarmField, Farm
+from app.models import HarvestPerField, Harvest, FarmField
 from app.extensions import db
 
 auth_harvest_per_field_bp = Blueprint('auth_harvest_per_field_bp', __name__)
@@ -8,19 +8,13 @@ auth_harvest_per_field_bp = Blueprint('auth_harvest_per_field_bp', __name__)
 @auth_harvest_per_field_bp.route('/auth/harvest_per_field')
 @login_required
 def index():
-    if current_user.permission != 1:  # Suppose 0 and 1 are permissions for superauth and auth
+    if current_user.permission != 1: 
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
     children_1 = HarvestPerField.query.all()
-
-    # Correct usage of query and join
-    children_2 = db.session.query(Harvest).join(Farm, Harvest.farm_id == Farm.id) \
-                        .filter(Farm.company_id == current_user.company_id) \
-                        .all()
-    children_3 = db.session.query(FarmField).join(Farm, FarmField.farm_id == Farm.id) \
-                        .filter(Farm.company_id == current_user.company_id) \
-                        .all()
+    children_2 = Harvest.query.all()
+    children_3 = FarmField.query.all()
     
     # Create dictionaries to map harvest_id and field_id to their names
     harvest_map = {harvest.id: harvest.name for harvest in children_2}
@@ -38,13 +32,23 @@ def add_harvest_per_field_modal():
 
     harvest_id = request.form['harvest_id']
     field_id = request.form['field_id']
-    yield_amount = request.form['yield_amount']
-    yield_type = request.form['yield_type']
+    yield_amount = request.form.get('yield_amount')
+    yield_type = request.form.get('yield_type')
 
     # Validate inputs
     if not harvest_id or not field_id:
-        flash('All fields are required.')
+        flash('Harvest and Field are required.')
         return redirect(url_for('auth_harvest_per_field_bp.index'))
+
+    # Set default values if not provided
+    if not yield_amount:
+        yield_amount = 0.0
+    else:
+        try:
+            yield_amount = float(yield_amount)
+        except ValueError:
+            flash('Yield amount must be a valid number.')
+            return redirect(url_for('auth_harvest_per_field_bp.index'))
 
     new_harvest_per_field = HarvestPerField(
         harvest_id=harvest_id,
@@ -57,8 +61,7 @@ def add_harvest_per_field_modal():
     flash('Harvest Per Field successfully added!')
     return redirect(url_for('auth_harvest_per_field_bp.index'))
 
-
-@auth_harvest_per_field_bp.route('/auth/edit_harvest_per_field/<int:harvest_per_field_id>', methods=['POST'])
+@auth_harvest_per_field_bp.route('/edit_harvest_per_field/<int:harvest_per_field_id>', methods=['POST'])
 @login_required
 def edit_harvest_per_field(harvest_per_field_id):
     harvest_per_field = HarvestPerField.query.get_or_404(harvest_per_field_id)
@@ -68,13 +71,23 @@ def edit_harvest_per_field(harvest_per_field_id):
 
     harvest_id = request.form['harvest_id']
     field_id = request.form['field_id']
-    yield_amount = request.form['yield_amount']
-    yield_type = request.form['yield_type']
+    yield_amount = request.form.get('yield_amount')
+    yield_type = request.form.get('yield_type')
 
     # Validate inputs
     if not harvest_id or not field_id:
-        flash('All fields are required.')
+        flash('Harvest and Field are required.')
         return redirect(url_for('auth_harvest_per_field_bp.index'))
+
+    # Set default values if not provided
+    if not yield_amount:
+        yield_amount = 0.0
+    else:
+        try:
+            yield_amount = float(yield_amount)
+        except ValueError:
+            flash('Yield amount must be a valid number.')
+            return redirect(url_for('auth_harvest_per_field_bp.index'))
 
     harvest_per_field.harvest_id = harvest_id
     harvest_per_field.field_id = field_id
@@ -85,7 +98,7 @@ def edit_harvest_per_field(harvest_per_field_id):
     flash('Harvest Per Field successfully updated!')
     return redirect(url_for('auth_harvest_per_field_bp.index'))
 
-@auth_harvest_per_field_bp.route('/auth/delete_harvest_per_field/<int:harvest_per_field_id>')
+@auth_harvest_per_field_bp.route('/delete_harvest_per_field/<int:harvest_per_field_id>')
 @login_required
 def delete_harvest_per_field(harvest_per_field_id):
     harvest_per_field = HarvestPerField.query.get_or_404(harvest_per_field_id)
@@ -97,3 +110,14 @@ def delete_harvest_per_field(harvest_per_field_id):
     db.session.commit()
     flash('Harvest Per Field successfully deleted!')
     return redirect(url_for('auth_harvest_per_field_bp.index'))
+
+@auth_harvest_per_field_bp.route('/get_fields_by_harvest', methods=['GET'])
+def get_fields_by_harvest():
+    harvest_id = request.args.get('harvest_id')
+    if harvest_id:
+        harvest = Harvest.query.get(harvest_id)
+        if harvest:
+            fields = FarmField.query.filter_by(farm_id=harvest.farm_id).all()
+            fields_data = [{'id': field.id, 'name': field.name} for field in fields]
+            return jsonify({'fields': fields_data})
+    return jsonify({'fields': []})

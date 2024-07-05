@@ -65,8 +65,8 @@ class FarmField(TimestampMixin, db.Model):
 
 class Harvest(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'), nullable=False)
     name = db.Column(db.String(80), nullable=False)
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm.id'), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     fields = db.relationship('HarvestPerField', backref='harvest', lazy=True)
 
