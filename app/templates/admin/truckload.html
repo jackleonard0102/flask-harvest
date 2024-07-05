@@ -26,8 +26,8 @@
         <th class="text-center">Operator</th>
         <th class="text-center">Truck</th>
         <th class="text-center">Trucker</th>
-        <th class="text-center">Field</th>
         <th class="text-center">Harvest</th>
+        <th class="text-center">Field</th>
         <th class="text-center">Yield Amount</th>
         <th class="text-center">Yield Type</th>
         <th class="text-center">Load Date Time</th>
@@ -42,8 +42,8 @@
         <td class="text-center align-middle">{{ truckload.operator.username }}</td>
         <td class="text-center align-middle">{{ truckload.truck.name }}</td>
         <td class="text-center align-middle">{{ truckload.trucker.username }}</td>
-        <td class="text-center align-middle">{{ truckload.field.name }}</td>
         <td class="text-center align-middle">{{ truckload.harvest.name }}</td>
+        <td class="text-center align-middle">{{ truckload.field.name }}</td>
         <td class="text-center align-middle">{{ truckload.yield_amount }}</td>
         <td class="text-center align-middle">{{ truckload.yield_type }}</td>
         <td class="text-center align-middle">{{ truckload.load_date_time }}</td>
@@ -150,20 +150,6 @@
                   </select>
                 </div>
                 <div class="form-group mb-3">
-                  <label for="field{{ truckload.id }}">Field</label>
-                  <select
-                    class="form-control"
-                    id="field{{ truckload.id }}"
-                    name="field_id"
-                  >
-                    {% for field in fields %}
-                    <option value="{{ field.id }}" {% if field.id == truckload.field_id %}selected{% endif %}>
-                      {{ field.name }}
-                    </option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="form-group mb-3">
                   <label for="harvest{{ truckload.id }}">Harvest</label>
                   <select
                     class="form-control"
@@ -173,6 +159,20 @@
                     {% for harvest in harvests %}
                     <option value="{{ harvest.id }}" {% if harvest.id == truckload.harvest_id %}selected{% endif %}>
                       {{ harvest.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <label for="field{{ truckload.id }}">Field</label>
+                  <select
+                    class="form-control"
+                    id="field{{ truckload.id }}"
+                    name="field_id"
+                  >
+                    {% for field in fields %}
+                    <option value="{{ field.id }}" {% if field.id == truckload.field_id %}selected{% endif %}>
+                      {{ field.name }}
                     </option>
                     {% endfor %}
                   </select>
@@ -217,124 +217,124 @@
 
 
       <!-- Delete Truckload Modal -->
-<div
-class="modal fade"
-id="deleteTruckloadModal{{ truckload.id }}"
-tabindex="-1"
-aria-labelledby="deleteTruckloadModalLabel{{ truckload.id }}"
-aria-hidden="true"
->
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="deleteTruckloadModalLabel{{ truckload.id }}">
-        Confirm Delete
-      </h5>
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="modal"
-        aria-label="Close"
-      ></button>
+    <div
+    class="modal fade"
+    id="deleteTruckloadModal{{ truckload.id }}"
+    tabindex="-1"
+    aria-labelledby="deleteTruckloadModalLabel{{ truckload.id }}"
+    aria-hidden="true"
+    >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteTruckloadModalLabel{{ truckload.id }}">
+            Confirm Delete
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this truckload?
+        </div>
+        <div class="modal-footer">
+          <a
+            href="{{ url_for('admin_truckload_bp.delete_truckload', truckload_id=truckload.id) }}"
+            class="btn btn-danger"
+            >Delete</a
+          >
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="modal-body">
-      Are you sure you want to delete this truckload?
     </div>
-    <div class="modal-footer">
-      <a
-        href="{{ url_for('admin_truckload_bp.delete_truckload', truckload_id=truckload.id) }}"
-        class="btn btn-danger"
-        >Delete</a
-      >
-      <button
-        type="button"
-        class="btn btn-secondary"
-        data-bs-dismiss="modal"
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-</div>
-</div>
-{% endfor %}
-</tbody>
-</table>
+    {% endfor %}
+    </tbody>
+    </table>
 
-<!-- Add Truckload Modal -->
-<div class="modal fade" id="addTruckloadModal" tabindex="-1" aria-labelledby="addTruckloadModalLabel" aria-hidden="true">
-<div class="modal-dialog">
-  <div class="modal-content">
-    <form method="POST" action="{{ url_for('admin_truckload_bp.add_truckload_modal') }}">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addTruckloadModalLabel">Add Truckload</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Add Truckload Modal -->
+    <div class="modal fade" id="addTruckloadModal" tabindex="-1" aria-labelledby="addTruckloadModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form method="POST" action="{{ url_for('admin_truckload_bp.add_truckload_modal') }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addTruckloadModalLabel">Add Truckload</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group mb-3">
+              <label for="harvest_rig_id">Harvest Rig</label>
+              <select class="form-control" id="harvest_rig_id" name="harvest_rig_id">
+                {% for rig in harvest_rigs %}
+                <option value="{{ rig.id }}">{{ rig.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="operator_id">Operator</label>
+              <select class="form-control" id="operator_id" name="operator_id">
+                {% for user in operators %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="truck_id">Truck</label>
+              <select class="form-control" id="truck_id" name="truck_id">
+                {% for truck in trucks %}
+                <option value="{{ truck.id }}">{{ truck.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="trucker_id">Trucker</label>
+              <select class="form-control" id="trucker_id" name="trucker_id">
+                {% for user in truckers %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="harvest_id">Harvest</label>
+              <select class="form-control" id="harvest_id" name="harvest_id">
+                {% for harvest in harvests %}
+                <option value="{{ harvest.id }}">{{ harvest.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="field_id">Field</label>
+              <select class="form-control" id="field_id" name="field_id">
+                {% for field in fields %}
+                <option value="{{ field.id }}">{{ field.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="yield_amount">Yield Amount</label>
+              <input type="text" class="form-control" id="yield_amount" name="yield_amount">
+            </div>
+            <div class="form-group mb-3">
+              <label for="yield_type">Yield Type</label>
+              <input type="text" class="form-control" id="yield_type" name="yield_type">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Add Truckload</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
       </div>
-      <div class="modal-body">
-        <div class="form-group mb-3">
-          <label for="harvest_rig_id">Harvest Rig</label>
-          <select class="form-control" id="harvest_rig_id" name="harvest_rig_id">
-            {% for rig in harvest_rigs %}
-            <option value="{{ rig.id }}">{{ rig.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="operator_id">Operator</label>
-          <select class="form-control" id="operator_id" name="operator_id">
-            {% for user in operators %}
-            <option value="{{ user.id }}">{{ user.username }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="truck_id">Truck</label>
-          <select class="form-control" id="truck_id" name="truck_id">
-            {% for truck in trucks %}
-            <option value="{{ truck.id }}">{{ truck.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="trucker_id">Trucker</label>
-          <select class="form-control" id="trucker_id" name="trucker_id">
-            {% for user in truckers %}
-            <option value="{{ user.id }}">{{ user.username }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="field_id">Field</label>
-          <select class="form-control" id="field_id" name="field_id">
-            {% for field in fields %}
-            <option value="{{ field.id }}">{{ field.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="harvest_id">Harvest</label>
-          <select class="form-control" id="harvest_id" name="harvest_id">
-            {% for harvest in harvests %}
-            <option value="{{ harvest.id }}">{{ harvest.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group mb-3">
-          <label for="yield_amount">Yield Amount</label>
-          <input type="text" class="form-control" id="yield_amount" name="yield_amount">
-        </div>
-        <div class="form-group mb-3">
-          <label for="yield_type">Yield Type</label>
-          <input type="text" class="form-control" id="yield_type" name="yield_type">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Add Truckload</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
-    </form>
+    </div>
   </div>
-</div>
-</div>
 </div>
 {% endblock %}
