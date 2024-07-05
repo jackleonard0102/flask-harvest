@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="container">
   <h2>Trucks</h2>
   <div class="d-flex justify-content-between align-items-center my-3">
@@ -30,13 +29,15 @@
       </tr>
     </thead>
     <tbody id="truckTableBody">
-      {% for truck in children_1 %}
+      {% for truck in trucks %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
         <td class="text-center align-middle">{{ truck.name }}</td>
         <td class="text-center align-middle">{{ truck.year }}</td>
         <td class="text-center align-middle">{{ truck.vin }}</td>
-        <td class="text-center align-middle">{{ truck.current_driver_id }}</td>
+        <td class="text-center align-middle">
+          {{ trucker_map.get(truck.current_driver_id, 'No Driver') }}
+        </td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"
@@ -84,27 +85,14 @@
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
-                  <label for="company{{ truck.id }}">Company</label>
-                  <select
-                    class="form-control"
-                    id="company{{ truck.id }}"
-                    name="company_id"
-                  >
-                    {% for customer in children_2 %}
-                    <option value="{{ customer.id }}" {% if customer.id == truck.company_id %}selected{% endif %}>
-                      {{ customer.name }}
-                    </option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="form-group mb-3">
                   <label for="name{{ truck.id }}">Name</label>
                   <input
                     type="text"
                     class="form-control"
                     id="name{{ truck.id }}"
                     name="name"
-                    value="{{ truck.name }}" required
+                    value="{{ truck.name }}"
+                    required
                   />
                 </div>
                 <div class="form-group mb-3">
@@ -114,7 +102,8 @@
                     class="form-control"
                     id="year{{ truck.id }}"
                     name="year"
-                    value="{{ truck.year }}" required
+                    value="{{ truck.year }}"
+                    required
                   />
                 </div>
                 <div class="form-group mb-3">
@@ -124,24 +113,24 @@
                     class="form-control"
                     id="vin{{ truck.id }}"
                     name="vin"
-                    value="{{ truck.vin }}" required
+                    value="{{ truck.vin }}"
+                    required
                   />
                 </div>
                 <div class="form-group mb-3">
                   <label for="driver{{ truck.id }}">Driver</label>
-                  <input
-                    type="driver"
-                    class="form-control"
-                    id="driver{{ truck.id }}"
-                    name="driver"
-                    value="{{ truck.current_driver_id }}"
-                  />
+                  <select class="form-control" id="driver{{ truck.id }}" name="driver">
+                    <option value="">No Driver</option>
+                    {% for trucker in truckers %}
+                    <option value="{{ trucker.id }}" {% if trucker.id == truck.current_driver_id %}selected{% endif %}>
+                      {{ trucker.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">
-                  Update
-                </button>
+                <button type="submit" class="btn btn-primary">Update</button>
                 <button
                   type="button"
                   class="btn btn-secondary"
@@ -211,7 +200,10 @@
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <form method="POST" action="{{ url_for('auth_truck_bp.add_truck_modal') }}">
+        <form
+          method="POST"
+          action="{{ url_for('auth_truck_bp.add_truck_modal') }}"
+        >
           <div class="modal-header">
             <h5 class="modal-title" id="addTruckModalLabel">Add New Truck</h5>
             <button
@@ -224,12 +216,8 @@
           <div class="modal-body">
             <div class="form-group mb-3">
               <label for="company">Company</label>
-              <select
-                class="form-control"
-                id="company"
-                name="company_id"
-              >
-                {% for customer in children_2 %}
+              <select class="form-control" id="company" name="company_id">
+                {% for customer in companies %}
                 <option value="{{ customer.id }}">{{ customer.name }}</option>
                 {% endfor %}
               </select>
@@ -240,7 +228,8 @@
                 type="text"
                 class="form-control"
                 id="name"
-                name="name" required
+                name="name"
+                required
               />
             </div>
             <div class="form-group mb-3">
@@ -249,7 +238,8 @@
                 type="year"
                 class="form-control"
                 id="year"
-                name="year" required
+                name="year"
+                required
               />
             </div>
             <div class="form-group mb-3">
@@ -258,17 +248,16 @@
                 type="vin"
                 class="form-control"
                 id="vin"
-                name="vin" required
+                name="vin"
+                required
               />
             </div>
             <div class="form-group mb-3">
               <label for="driver">Driver</label>
-              <input
-                type="driver"
-                class="form-control"
-                id="driver"
-                name="driver"
-              />
+              <select class="form-control" id="driver" name="driver">
+                <option value="">No Driver</option>
+                <!-- Options will be populated by JavaScript -->
+              </select>
             </div>
           </div>
           <div class="modal-footer">
@@ -300,4 +289,42 @@
     });
   });
 </script>
+
+<script>
+  const truckers = {{ truckers|tojson }};
+
+  function populateDrivers(companyIdElementId, driverIdElementId) {
+    const companyId = document.getElementById(companyIdElementId).value;
+    const driverSelect = document.getElementById(driverIdElementId);
+  
+    // Clear existing options
+    driverSelect.innerHTML = '';
+  
+    // Add empty default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'No Driver';
+    driverSelect.appendChild(defaultOption);
+  
+    // Filter truckers by company ID and create new options
+    truckers.filter(trucker => trucker.company_id == companyId)
+      .forEach(trucker => {
+        const option = document.createElement('option');
+        option.value = trucker.id;
+        option.textContent = trucker.name;
+        driverSelect.appendChild(option);
+      });
+  }
+  
+
+  // Initialize driver dropdowns for add modal
+  populateDrivers('company', 'driver');
+
+  // Initialize driver dropdowns for edit modals
+  document.querySelectorAll('[id^=company]').forEach(selectElement => {
+    const truckId = selectElement.id.replace('company', '');
+    populateDrivers(`company${truckId}`, `driver${truckId}`);
+  });
+</script>
+
 {% endblock %}

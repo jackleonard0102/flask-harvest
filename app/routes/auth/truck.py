@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import Truck, Customer
+from app.models import Truck, Customer, User
 from app.extensions import db
 
 auth_truck_bp = Blueprint('auth_truck_bp', __name__)
@@ -12,13 +12,19 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = Truck.query.filter(Truck.company_id == current_user.company_id).all()
-    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active', Customer.id == current_user.company_id).all()
-    
+    trucks = Truck.query.filter(Truck.company_id == current_user.company_id).all()
+    companies = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active', Customer.id == current_user.company_id).all()
     # Create a dictionary to map company_id to company.name
-    company_map = {customer.id: customer.name for customer in children_2}
+    company_map = {customer.id: customer.name for customer in companies}
+    truckers = User.query.filter(User.company_id == current_user.company_id, User.permission ==4).all()
+    # Convert truckers to a list of dictionaries for JSON serialization
+   
+    truckers_data = [{'id': trucker.id, 'name': trucker.username, 'company_id': trucker.company_id} for trucker in truckers]
+
+    # Create a dictionary to map user ID to username
+    trucker_map = {trucker.id: trucker.username for trucker in truckers}
     
-    return render_template('auth/truck.html', current_user=current_user, children_1=children_1, children_2=children_2, company_map=company_map)
+    return render_template('auth/truck.html', current_user=current_user, trucks=trucks, companies=companies, truckers=truckers_data, trucker_map=trucker_map, company_map=company_map)
 
 
 @auth_truck_bp.route('/auth/add_truck_modal', methods=['POST'])
