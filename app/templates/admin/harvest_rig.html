@@ -31,14 +31,14 @@
       </tr>
     </thead>
     <tbody id="harvest_rigTableBody">
-      {% for harvest_rig in children_1 %}
+      {% for harvest_rig in harvest_rigs %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
         <td class="text-center align-middle">{{ company_map[harvest_rig.company_id] }}</td>
         <td class="text-center align-middle">{{ harvest_rig.name }}</td>
         <td class="text-center align-middle">{{ harvest_rig.year }}</td>
         <td class="text-center align-middle">{{ harvest_rig.serial_number }}</td>
-        <td class="text-center align-middle">{{ harvest_rig.current_operator_id }}</td>
+        <td class="text-center align-middle">{{ operator_map.get(harvest_rig.current_operator_id, 'No Operator') }}</td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"
@@ -91,8 +91,9 @@
                     class="form-control"
                     id="company{{ harvest_rig.id }}"
                     name="company_id"
+                    onchange="populateOperators('company{{ harvest_rig.id }}', 'operator{{ harvest_rig.id }}')"
                   >
-                    {% for customer in children_2 %}
+                    {% for customer in companies %}
                     <option value="{{ customer.id }}" {% if customer.id == harvest_rig.company_id %}selected{% endif %}>
                       {{ customer.name }}
                     </option>
@@ -131,13 +132,14 @@
                 </div>
                 <div class="form-group mb-3">
                   <label for="operator{{ harvest_rig.id }}">Operator</label>
-                  <input
-                    type="operator"
-                    class="form-control"
-                    id="operator{{ harvest_rig.id }}"
-                    name="operator"
-                    value="{{ harvest_rig.current_operator_id }}"
-                  />
+                  <select class="form-control" id="operator{{ harvest_rig.id }}" name="operator">
+                    <option value="">No Operator</option>
+                    {% for operator in operators %}
+                    <option value="{{ operator.id }}" {% if operator.id == harvest_rig.current_operator_id %}selected{% endif %}>
+                      {{ operator.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
                 </div>
               </div>
               <div class="modal-footer">
@@ -230,8 +232,9 @@
                 class="form-control"
                 id="company"
                 name="company_id"
+                onchange="populateOperators('company', 'operator')"
               >
-                {% for customer in children_2 %}
+                {% for customer in companies %}
                 <option value="{{ customer.id }}">{{ customer.name }}</option>
                 {% endfor %}
               </select>
@@ -264,13 +267,11 @@
               />
             </div>
             <div class="form-group mb-3">
-              <label for="operator">Operator</label>
-              <input
-                type="operator"
-                class="form-control"
-                id="operator"
-                name="operator"
-              />
+              <label for="operator">operator</label>
+              <select class="form-control" id="operator" name="operator">
+                <option value="">No Operator</option>
+                <!-- Options will be populated by JavaScript -->
+              </select>
             </div>
           </div>
           <div class="modal-footer">
@@ -300,6 +301,43 @@
       );
       row.style.display = match ? "" : "none";
     });
+  });
+</script>
+
+<script>
+  const operators = {{ operators|tojson }};
+
+  function populateOperators(companyIdElementId, operatorIdElementId) {
+    const companyId = document.getElementById(companyIdElementId).value;
+    const operatorSelect = document.getElementById(operatorIdElementId);
+  
+    // Clear existing options
+    operatorSelect.innerHTML = '';
+  
+    // Add empty default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'No Operator';
+    operatorSelect.appendChild(defaultOption);
+  
+    // Filter operators by company ID and create new options
+    operators.filter(operator => operator.company_id == companyId)
+      .forEach(operator => {
+        const option = document.createElement('option');
+        option.value = operator.id;
+        option.textContent = operator.name;
+        operatorSelect.appendChild(option);
+      });
+  }
+  
+
+  // Initialize operator dropdowns for add modal
+  populateOperators('company', 'operator');
+
+  // Initialize operator dropdowns for edit modals
+  document.querySelectorAll('[id^=company]').forEach(selectElement => {
+    const HarvestRigId = selectElement.id.replace('company', '');
+    populateOperators(`company${HarvestRigId}`, `operator${HarvestRigId}`);
   });
 </script>
 {% endblock %}

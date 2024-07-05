@@ -94,7 +94,7 @@
                 <div class="form-group mb-3">
                   <label for="driver{{ truck.id }}">Driver</label>
                   <select class="form-control" id="driver{{ truck.id }}" name="driver">
-                    <option value="">Select a driver</option>
+                    <option value="">No Driver</option>
                     {% for trucker in truckers %}
                     <option value="{{ trucker.id }}" {% if trucker.id == truck.current_driver_id %}selected{% endif %}>
                       {{ trucker.name }}
@@ -168,7 +168,7 @@
             <div class="form-group mb-3">
               <label for="driver">Driver</label>
               <select class="form-control" id="driver" name="driver">
-                <option value="">Select a driver</option>
+                <option value="">No Driver</option>
                 <!-- Options will be populated by JavaScript -->
               </select>
             </div>
@@ -210,7 +210,7 @@
     // Add empty default option
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
-    defaultOption.textContent = 'Select a driver';
+    defaultOption.textContent = 'No Driver';
     driverSelect.appendChild(defaultOption);
   
     // Filter truckers by company ID and create new options

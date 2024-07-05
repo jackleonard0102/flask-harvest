@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import HarvestRig, Customer  # Import your models accordingly
+from app.models import HarvestRig, Customer, User # Import your models accordingly
 from app.extensions import db
 
 admin_harvest_rig_bp = Blueprint('admin_harvest_rig_bp', __name__)
@@ -12,13 +12,18 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = HarvestRig.query.all()
-    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active').all()
-    
+    harvest_rigs = HarvestRig.query.all()
+    companies = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active').all()
     # Create a dictionary to map company_id to company.name
-    company_map = {customer.id: customer.name for customer in children_2}
+    company_map = {customer.id: customer.name for customer in companies}
     
-    return render_template('admin/harvest_rig.html', current_user=current_user, children_1=children_1, children_2=children_2, company_map=company_map)
+    operators = User.query.filter(User.permission == 2).all()
+     # Convert operators to a list of dictionaries for JSON serialization
+    operators_data = [{'id': operator.id, 'name': operator.username, 'company_id': operator.company_id} for operator in operators]
+
+    # Create a dictionary to map user ID to username
+    operator_map = {operator.id: operator.username for operator in operators}
+    return render_template('admin/harvest_rig.html', current_user=current_user, operators=operators_data, operator_map=operator_map, harvest_rigs=harvest_rigs, companies=companies, company_map=company_map)
 
 @admin_harvest_rig_bp.route('/add_harvest_rig_modal', methods=['POST'])
 @login_required
