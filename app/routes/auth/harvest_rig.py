@@ -18,7 +18,7 @@ def index():
     # Create a dictionary to map company_id to company.name
     company_map = {customer.id: customer.name for customer in companies}
     
-    operators = User.query.filter(User.company_id == current_user.company_id, User.permission ==4).all()
+    operators = User.query.filter(User.company_id == current_user.company_id, User.permission ==2).all()
     # Convert operators to a list of dictionaries for JSON serialization
    
     operators_data = [{'id': operator.id, 'name': operator.username, 'company_id': operator.company_id} for operator in operators]
