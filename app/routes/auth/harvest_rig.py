@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import HarvestRig, Customer  # Import your models accordingly
+from app.models import HarvestRig, Customer, User  # Import your models accordingly
 from app.extensions import db
 
 auth_harvest_rig_bp = Blueprint('auth_harvest_rig_bp', __name__)
@@ -12,13 +12,21 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = HarvestRig.query.filter(HarvestRig.company_id == current_user.company_id).all()
-    children_2 = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active', Customer.id == current_user.company_id).all()
+    harvest_rigs = HarvestRig.query.filter(HarvestRig.company_id == current_user.company_id).all()
+    companies = Customer.query.filter(Customer.deleted_at.is_(None), Customer.status == 'active', Customer.id == current_user.company_id).all()
     
     # Create a dictionary to map company_id to company.name
-    company_map = {customer.id: customer.name for customer in children_2}
+    company_map = {customer.id: customer.name for customer in companies}
     
-    return render_template('auth/harvest_rig.html', current_user=current_user, children_1=children_1, children_2=children_2, company_map=company_map)
+    operators = User.query.filter(User.company_id == current_user.company_id, User.permission ==4).all()
+    # Convert operators to a list of dictionaries for JSON serialization
+   
+    operators_data = [{'id': operator.id, 'name': operator.username, 'company_id': operator.company_id} for operator in operators]
+
+    # Create a dictionary to map user ID to username
+    operator_map = {operator.id: operator.username for operator in operators}
+    
+    return render_template('auth/harvest_rig.html', current_user=current_user, harvest_rigs=harvest_rigs, companies=companies, operators=operators_data, operator_map=operator_map, company_map=company_map)
 
 @auth_harvest_rig_bp.route('/auth/add_harvest_rig_modal', methods=['POST'])
 @login_required
