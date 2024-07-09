@@ -29,7 +29,7 @@
       </tr>
     </thead>
     <tbody id="harvestTableBody">
-      {% for harvest in children_1 %}
+      {% for harvest in harvests %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
         <td class="text-center align-middle">{{ harvest.name }}</td>
@@ -82,7 +82,7 @@
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
-                  <label for="name{{ harvest.id }}">Name</label>
+                  <label for="name{{ harvest.id }}">Harvest</label>
                   <input
                     type="text"
                     class="form-control"
@@ -98,7 +98,7 @@
                     id="farm{{ harvest.id }}"
                     name="farm_id" required
                   >
-                    {% for farm in children_2 %}
+                    {% for farm in farms %}
                     <option value="{{ farm.id }}" {% if farm.id == harvest.farm_id %}selected{% endif %}>
                       {{ farm.name }}
                     </option>
@@ -200,7 +200,7 @@
           </div>
           <div class="modal-body">
             <div class="form-group mb-3">
-              <label for="name">Name</label>
+              <label for="name">Harvest</label>
               <input
                 type="text"
                 class="form-control"
@@ -215,7 +215,7 @@
                 id="farm"
                 name="farm_id"
               >
-                {% for farm in children_2 %}
+                {% for farm in farms %}
                 <option value="{{ farm.id }}">{{ farm.name }}</option>
                 {% endfor %}
               </select>

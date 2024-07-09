@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, jsonify, request
 from flask_login import login_required, current_user
-from app.models import HarvestPerField, Harvest, FarmField
+from app.models import HarvestPerField, Harvest, FarmField, Customer, Farm
 from app.extensions import db
 
 admin_harvest_per_field_bp = Blueprint('admin_harvest_per_field_bp', __name__)
@@ -11,16 +11,20 @@ def index():
     if current_user.permission != 0: 
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
-
-    children_1 = HarvestPerField.query.all()
-    children_2 = Harvest.query.all()
-    children_3 = FarmField.query.all()
+    active_customer_ids = [customer.id for customer in Customer.query.filter(Customer.deleted_at == None, Customer.status == 'active').all()]
+    farms = Farm.query.join(Customer, Customer.status == "active").filter(Farm.deleted_at == None, Farm.company_id.in_(active_customer_ids)).all()
+    active_farm_ids = [farm.id for farm in farms]
+    farm_fields = FarmField.query.filter(FarmField.farm_id.in_(active_farm_ids)).all()
+    active_farm_fields = [field.id for field in farm_fields]
+    
+    harvests = Harvest.query.filter(Harvest.farm_id.in_(active_farm_ids)).all()
+    children_1 = HarvestPerField.query.filter(HarvestPerField.field_id.in_(active_farm_fields)).all()
     
     # Create dictionaries to map harvest_id and field_id to their names
-    harvest_map = {harvest.id: harvest.name for harvest in children_2}
-    field_map = {field.id: field.name for field in children_3}
+    harvest_map = {harvest.id: harvest.name for harvest in harvests}
+    field_map = {field.id: field.name for field in farm_fields}
     
-    return render_template('admin/harvest_per_field.html', current_user=current_user, children_1=children_1, harvest_map=harvest_map, field_map=field_map, children_2=children_2, children_3=children_3)
+    return render_template('admin/harvest_per_field.html', current_user=current_user, children_1=children_1, harvest_map=harvest_map, field_map=field_map, harvests=harvests, farm_fields=active_farm_fields)
 
 @admin_harvest_per_field_bp.route('/add_harvest_per_field_modal', methods=['POST'])
 @login_required

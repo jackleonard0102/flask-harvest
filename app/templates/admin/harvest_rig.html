@@ -22,8 +22,8 @@
     <thead class="thead-dark">
       <tr>
         <th class="text-center">No</th>
+        <th class="text-center">Harvest Rig</th>
         <th class="text-center">Company</th>
-        <th class="text-center">Name</th>
         <th class="text-center">Year</th>
         <th class="text-center">Serial Number</th>
         <th class="text-center">Operator</th>
@@ -34,8 +34,8 @@
       {% for harvest_rig in harvest_rigs %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
-        <td class="text-center align-middle">{{ company_map[harvest_rig.company_id] }}</td>
         <td class="text-center align-middle">{{ harvest_rig.name }}</td>
+        <td class="text-center align-middle">{{ company_map[harvest_rig.company_id] }}</td>
         <td class="text-center align-middle">{{ harvest_rig.year }}</td>
         <td class="text-center align-middle">{{ harvest_rig.serial_number }}</td>
         <td class="text-center align-middle">{{ operator_map.get(harvest_rig.current_operator_id, 'No Operator') }}</td>
@@ -86,6 +86,16 @@
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
+                  <label for="name{{ harvest_rig.id }}">Harvest Rig</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name{{ harvest_rig.id }}"
+                    name="name"
+                    value="{{ harvest_rig.name }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
                   <label for="company{{ harvest_rig.id }}">Company</label>
                   <select
                     class="form-control"
@@ -99,16 +109,6 @@
                     </option>
                     {% endfor %}
                   </select>
-                </div>
-                <div class="form-group mb-3">
-                  <label for="name{{ harvest_rig.id }}">Name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="name{{ harvest_rig.id }}"
-                    name="name"
-                    value="{{ harvest_rig.name }}" required
-                  />
                 </div>
                 <div class="form-group mb-3">
                   <label for="year{{ harvest_rig.id }}">Year</label>
@@ -227,6 +227,15 @@
           </div>
           <div class="modal-body">
             <div class="form-group mb-3">
+              <label for="name">Harvest Rig</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name" required
+              />
+            </div>
+            <div class="form-group mb-3">
               <label for="company">Company</label>
               <select
                 class="form-control"
@@ -238,15 +247,6 @@
                 <option value="{{ customer.id }}">{{ customer.name }}</option>
                 {% endfor %}
               </select>
-            </div>
-            <div class="form-group mb-3">
-              <label for="name">Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name" required
-              />
             </div>
             <div class="form-group mb-3">
               <label for="year">Year</label>

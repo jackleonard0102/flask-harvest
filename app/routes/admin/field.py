@@ -53,7 +53,7 @@ def add_field_modal():
 @login_required
 def edit_field(field_id):
     field = FarmField.query.get_or_404(field_id)
-    if current_user.permission != 0:  # Only superadmin or admin can edit fields
+    if current_user.permission != 0:
         flash('Unauthorized access')
         return redirect(url_for('admin_field_bp.index'))
 
