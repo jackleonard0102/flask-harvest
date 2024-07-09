@@ -13,7 +13,8 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = User.query.filter(User.permission > 0).all()
+    active_customer_ids = [customer.id for customer in Customer.query.filter(Customer.deleted_at == None, Customer.status == 'active').all()]
+    children_1 = User.query.filter(User.permission > 0, User.company_id.in_(active_customer_ids)).all()
     children_2 = Customer.query.filter(Customer.deleted_at == None, Customer.status == 'active').all()
     
     # Create a dictionary to map company_id to company.name

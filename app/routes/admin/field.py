@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import FarmField, Farm
+from app.models import FarmField, Farm, Customer
 from app.extensions import db, bcrypt
 
 
@@ -13,10 +13,11 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
-    children_1 = FarmField.query.all()
-    children_2 = Farm.query.filter(Farm.deleted_at == None).all()  # Assuming we need active farms
+    active_customer_ids = [customer.id for customer in Customer.query.filter(Customer.deleted_at == None, Customer.status == 'active').all()]
+    children_2 = Farm.query.join(Customer, Customer.status == "active").filter(Farm.deleted_at == None, Farm.company_id.in_(active_customer_ids)).all()
+    active_farm_ids = [farm.id for farm in children_2]
+    children_1 = FarmField.query.filter(FarmField.farm_id.in_(active_farm_ids)).all()
     
-    # Create a dictionary to map farm_id to farm.name
     farm_map = {farm.id: farm.name for farm in children_2}
     
     return render_template('admin/field.html', current_user=current_user, children_1=children_1, farm_map=farm_map, children_2=children_2)

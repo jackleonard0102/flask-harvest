@@ -22,10 +22,10 @@
     <thead class="thead-dark">
       <tr>
         <th class="text-center">No</th>
-        <th class="text-center">Company</th>
-        <th class="text-center">Name</th>
+        <th class="text-center">Farm</th>
         <th class="text-center">Email</th>
         <th class="text-center">Address</th>
+        <th class="text-center">Company</th>
         <th class="text-center">Actions</th>
       </tr>
     </thead>
@@ -33,10 +33,10 @@
       {% for farm in children_1 %}
       <tr>
         <td class="text-center align-middle">{{ loop.index }}</td>
-        <td class="text-center align-middle">{{ company_map[farm.company_id] }}</td>
         <td class="text-center align-middle">{{ farm.name }}</td>
         <td class="text-center align-middle">{{ farm.email }}</td>
         <td class="text-center align-middle">{{ farm.address }}</td>
+        <td class="text-center align-middle">{{ company_map[farm.company_id] }}</td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"
@@ -84,7 +84,7 @@
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
-                  <label for="name{{ farm.id }}">Name</label>
+                  <label for="name{{ farm.id }}">Farm</label>
                   <input
                     type="text"
                     class="form-control"
@@ -104,6 +104,16 @@
                   />
                 </div>
                 <div class="form-group mb-3">
+                  <label for="address{{ farm.id }}">Adress</label>
+                  <input
+                    type="address"
+                    class="form-control"
+                    id="address{{ farm.id }}"
+                    name="address"
+                    value="{{ farm.address }}" required
+                  />
+                </div>
+                <div class="form-group mb-3">
                   <label for="company{{ farm.id }}">Company</label>
                   <select
                     class="form-control"
@@ -116,16 +126,6 @@
                     </option>
                     {% endfor %}
                   </select>
-                </div>
-                <div class="form-group mb-3">
-                  <label for="address{{ farm.id }}">Adress</label>
-                  <input
-                    type="address"
-                    class="form-control"
-                    id="address{{ farm.id }}"
-                    name="address"
-                    value="{{ farm.address }}" required
-                  />
                 </div>
               </div>
               <div class="modal-footer">
@@ -213,6 +213,33 @@
           </div>
           <div class="modal-body">
             <div class="form-group mb-3">
+              <label for="name">Farm</label>
+              <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="email">Email</label>
+              <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email" required
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="address">Address</label>
+              <input
+              type="address"
+              class="form-control"
+              id="address"
+              name="address"
+              />
+            </div>
+            <div class="form-group mb-3">
               <label for="company">Company</label>
               <select
                 class="form-control"
@@ -223,33 +250,6 @@
                 <option value="{{ customer.id }}">{{ customer.name }}</option>
                 {% endfor %}
               </select>
-            </div>
-            <div class="form-group mb-3">
-              <label for="name">Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name" required
-              />
-            </div>
-            <div class="form-group mb-3">
-              <label for="email">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                name="email" required
-              />
-            </div>
-            <div class="form-group mb-3">
-              <label for="address">Address</label>
-              <input
-                type="address"
-                class="form-control"
-                id="address"
-                name="address"
-              />
             </div>
           </div>
           <div class="modal-footer">

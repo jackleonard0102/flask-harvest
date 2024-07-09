@@ -12,8 +12,9 @@ def index():
     if current_user.permission != 0:  # Assuming 0 and 1 are permissions for superadmin and admin
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
-
-    children_1 = Farm.query.all()
+    
+    active_customer_ids = [customer.id for customer in Customer.query.filter(Customer.deleted_at == None, Customer.status == 'active').all()]
+    children_1 = Farm.query.filter(Farm.company_id.in_(active_customer_ids), Farm.deleted_at == None).all()
     children_2 = Customer.query.filter(Customer.deleted_at == None, Customer.status == 'active').all()
     
     # Create a dictionary to map company_id to company.name
