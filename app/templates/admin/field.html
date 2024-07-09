@@ -58,38 +58,38 @@
       <!-- Edit Field Modal -->
       <div class="modal fade" id="editFieldModal{{ field.id }}" tabindex="-1" aria-labelledby="editFieldModalLabel{{ field.id }}" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="POST" action="{{ url_for('admin_field_bp.edit_field', field_id=field.id) }}">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editFieldModalLabel{{ field.id }}">Edit Field</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group mb-3">
-                            <label for="name{{ field.id }}">Field Name</label>
-                            <input type="text" class="form-control" id="name{{ field.id }}" name="name" value="{{ field.name }}" required />
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="acreage{{ field.id }}">Acreage</label>
-                            <input type="text" class="form-control" id="acreage{{ field.id }}" name="acreage" value="{{ field.acreage }}" required />
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="farm{{ field.id }}">Farm</label>
-                            <select class="form-control" id="farm{{ field.id }}" name="farm_id" required>
-                                {% for farm in children_2 %}
-                                <option value="{{ farm.id }}" {% if farm.id == field.farm_id %}selected{% endif %}>
-                                    {{ farm.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Update</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
-            </div>
+          <div class="modal-content">
+            <form method="POST" action="{{ url_for('admin_field_bp.edit_field', field_id=field.id) }}">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="editFieldModalLabel{{ field.id }}">Edit Field</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group mb-3">
+                  <label for="name{{ field.id }}">Field Name</label>
+                  <input type="text" class="form-control" id="name{{ field.id }}" name="name" value="{{ field.name }}" required />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="acreage{{ field.id }}">Acreage</label>
+                  <input type="text" class="form-control" id="acreage{{ field.id }}" name="acreage" value="{{ field.acreage }}" required />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="farm{{ field.id }}">Farm</label>
+                  <select class="form-control" id="farm{{ field.id }}" name="farm_id" required>
+                    {% for farm in children_2 %}
+                    <option value="{{ farm.id }}" {% if farm.id == field.farm_id %}selected{% endif %}>
+                      {{ farm.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -142,36 +142,36 @@
   <!-- Add Field Modal -->
   <div class="modal fade" id="addFieldModal" tabindex="-1" aria-labelledby="addFieldModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="POST" action="{{ url_for('admin_field_bp.add_field_modal') }}">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addFieldModalLabel">Add New Field</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <div class="form-group mb-3">
-                      <label for="name">Field Name</label>
-                      <input type="text" class="form-control" id="name" name="name" required />
-                  </div>
-                  <div class="form-group mb-3">
-                    <label for="acreage">Acreage</label>
-                    <input type="text" class="form-control" id="acreage" name="acreage" required />
-                  </div>
-                  <div class="form-group mb-3">
-                      <label for="farm">Farm</label>
-                      <select class="form-control" id="farm" name="farm_id" required>
-                          {% for farm in children_2 %}
-                          <option value="{{ farm.id }}">{{ farm.name }}</option>
-                          {% endfor %}
-                      </select>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
-        </div>
+      <div class="modal-content">
+        <form method="POST" action="{{ url_for('admin_field_bp.add_field_modal') }}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addFieldModalLabel">Add New Field</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group mb-3">
+                <label for="name">Field Name</label>
+                <input type="text" class="form-control" id="name" name="name" required />
+            </div>
+            <div class="form-group mb-3">
+              <label for="acreage">Acreage</label>
+              <input type="text" class="form-control" id="acreage" name="acreage" required />
+            </div>
+            <div class="form-group mb-3">
+              <label for="farm">Farm</label>
+              <select class="form-control" id="farm" name="farm_id" required>
+                  {% for farm in children_2 %}
+                  <option value="{{ farm.id }}">{{ farm.name }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

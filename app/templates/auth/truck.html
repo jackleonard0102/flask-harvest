@@ -21,7 +21,7 @@
     <thead class="thead-dark">
       <tr>
         <th class="text-center">No</th>
-        <th class="text-center">Name</th>
+        <th class="text-center">Truck</th>
         <th class="text-center">Year</th>
         <th class="text-center">Vin</th>
         <th class="text-center">Driver</th>
@@ -85,7 +85,7 @@
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
-                  <label for="name{{ truck.id }}">Name</label>
+                  <label for="name{{ truck.id }}">Truck</label>
                   <input
                     type="text"
                     class="form-control"
@@ -216,14 +216,14 @@
           <div class="modal-body">
             <div class="form-group mb-3">
               <label for="company">Company</label>
-              <select class="form-control" id="company" name="company_id">
+              <select class="form-control" id="company" name="company_id" disabled>
                 {% for customer in companies %}
                 <option value="{{ customer.id }}">{{ customer.name }}</option>
                 {% endfor %}
               </select>
             </div>
             <div class="form-group mb-3">
-              <label for="name">Name</label>
+              <label for="name">Truck</label>
               <input
                 type="text"
                 class="form-control"

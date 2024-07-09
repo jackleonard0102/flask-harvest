@@ -80,8 +80,8 @@
                 </div>
               </div>
               <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Update</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
               </div>
             </form>
           </div>
@@ -96,7 +96,7 @@
               <h5 class="modal-title" id="deleteHarvestPerFieldModalLabel{{ harvest_per_field.id }}">Delete Harvest Per Field</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">Are you sure you want to delete this Harvest Per Field?</div>
+            <div class="modal-body">Are you sure you want to delete this harvest field {{ field_map[harvest_per_field.field_id] }} in {{ harvest_map[harvest_per_field.harvest_id] }}?</div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <form action="{{ url_for('auth_harvest_per_field_bp.delete_harvest_per_field', harvest_per_field_id=harvest_per_field.id) }}" method="POST" style="display:inline;">
@@ -150,8 +150,8 @@
             </div>
           </div>
           <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Create</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Add Harvest Per Field</button>
           </div>
         </form>
       </div>
