@@ -42,9 +42,13 @@
 
       <div class="form-group my-4">
         <label for="harvest">Harvest</label>
-        <select id="harvest" name="harvest" class="form-control">
+        <select
+          id="harvest"
+          name="harvest"
+          class="form-control"
+          onchange="updateFields()"
+        >
           {% if default_harvest_id %}
-          <!-- Default selected option -->
           <option value="{{ default_harvest_id }}" selected>
             {{ harvest_names[default_harvest_id] }}
           </option>
@@ -58,9 +62,14 @@
       <div class="form-group my-4">
         <label for="field">Farm Field</label>
         <select id="field" name="field" class="form-control">
-          {% for field in fields %}
+          {% if default_field_id %}
+          <option value="{{ default_field_id }}" selected>
+            {{ field_names[default_field_id] }}
+          </option>
+          {% endif %} {% for field in related_fields %} {% if field.id !=
+          default_field_id %}
           <option value="{{ field.id }}">{{ field.name }}</option>
-          {% endfor %}
+          {% endif %} {% endfor %}
         </select>
       </div>
 
@@ -88,4 +97,25 @@
     </form>
   </div>
 </div>
+
+<script>
+  const fields = {{ fields|tojson }};
+  const harvests = {{ harvests|tojson }};
+
+  function updateFields() {
+    const harvestId = document.getElementById('harvest').value;
+    const fieldSelect = document.getElementById('field');
+
+    fieldSelect.innerHTML = '';
+
+    const relatedFields = fields.filter(field => field.farm_id === harvests.find(harvest => harvest.id == harvestId).farm_id);
+
+    relatedFields.forEach(field => {
+      const option = document.createElement('option');
+      option.value = field.id;
+      option.textContent = field.name;
+      fieldSelect.appendChild(option);
+    });
+  }
+</script>
 {% endblock %}
