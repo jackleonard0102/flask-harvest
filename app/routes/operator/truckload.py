@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, logout_user, current_user
 from app.models import HarvestRig, Customer, Farm, User, Truck, Truckload, HarvestPerField, Harvest, FarmField
 from app.extensions import db
+from datetime import datetime
 
 operator_truckload_bp = Blueprint('operator_truckload_bp', __name__)
 
@@ -18,7 +19,11 @@ def index():
         field_id = request.form.get('field')
         truck_id = request.form.get('truck')
         trucker_id = request.form.get('trucker')
+        load_date_time = request.form.get('load_date_time')
 
+        # Parse the load_date_time to a datetime object
+        load_date_time = datetime.strptime(load_date_time, '%Y-%m-%dT%H:%M')
+        # load_date_time = load_date_time.replace(second=0, microsecond=0)
         new_truckload = Truckload(
             operator_id=current_user.id,
             harvest_rig_id=harvest_rig_id,
@@ -26,6 +31,7 @@ def index():
             field_id=field_id,
             truck_id=truck_id,
             trucker_id=trucker_id,
+            load_date_time=load_date_time,
             trucker_confirmation=0  # Assuming it's not confirmed initially
         )
         db.session.add(new_truckload)
@@ -71,6 +77,16 @@ def index():
     else:
         related_fields = fields
 
+    # Determine default truck and trucker for first load
+    if trucks_list:
+        default_truck_id = trucks_list[0]['id']
+        default_trucker_id = trucks_list[0]['current_driver_id'] if trucks_list[0].get('current_driver_id') else None
+        default_trucker_name = next((trucker['username'] for trucker in truckers_list if trucker['id'] == default_trucker_id), '')
+    else:
+        default_truck_id = None
+        default_trucker_id = None
+        default_trucker_name = ''
+
     return render_template(
         'operator/truckload.html', 
         current_user=current_user, 
@@ -82,6 +98,9 @@ def index():
         truckers=truckers_list,
         default_harvest_id=default_harvest_id,
         default_field_id=default_field_id,
+        default_truck_id=default_truck_id, 
+        default_trucker_id=default_trucker_id,
+        default_trucker_name=default_trucker_name,
         harvest_per_field_ids=harvest_per_field_ids,
         harvest_names=harvest_names,
         field_names=field_names

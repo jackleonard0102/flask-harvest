@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% block content %}
 <div class="container">
   <h2 class="text-center" style="margin-bottom: 16px">Create New Truckload</h2>
   <div class="card rounded mx-auto" style="max-width: 60%">
@@ -21,41 +22,25 @@
 
       <div class="form-group my-4">
         <label for="harvest_rig">Harvest Rig</label>
-        {% for rig in harvest_rigs %} {% if rig.current_operator_id ==
-        current_user.id %}
-        <input
-          type="text"
-          id="harvest_rig_name"
-          name="harvest_rig_name"
-          class="form-control"
-          value="{{ rig.name }}"
-          readonly
-        />
-        <input
-          type="hidden"
-          id="harvest_rig_id"
-          name="harvest_rig_id"
-          value="{{ rig.id }}"
-        />
-        {% endif %} {% endfor %}
+        {% for rig in harvest_rigs %}
+          {% if rig.current_operator_id == current_user.id %}
+            <input type="text" id="harvest_rig_name" name="harvest_rig_name" class="form-control" value="{{ rig.name }}" readonly/>
+            <input type="hidden" id="harvest_rig_id" name="harvest_rig_id" value="{{ rig.id }}"/>
+          {% endif %}
+        {% endfor %}
       </div>
 
       <div class="form-group my-4">
         <label for="harvest">Harvest</label>
-        <select
-          id="harvest"
-          name="harvest"
-          class="form-control"
-          onchange="updateFields()"
-        >
+        <select id="harvest" name="harvest" class="form-control" onchange="updateFields()">
           {% if default_harvest_id %}
-          <option value="{{ default_harvest_id }}" selected>
-            {{ harvest_names[default_harvest_id] }}
-          </option>
-          {% endif %} {% for harvest_id, harvest_name in harvest_names.items()
-          %} {% if harvest_id != default_harvest_id %}
-          <option value="{{ harvest_id }}">{{ harvest_name }}</option>
-          {% endif %} {% endfor %}
+            <option value="{{ default_harvest_id }}" selected>{{ harvest_names[default_harvest_id] }}</option>
+          {% endif %}
+          {% for harvest_id, harvest_name in harvest_names.items() %}
+            {% if harvest_id != default_harvest_id %}
+              <option value="{{ harvest_id }}">{{ harvest_name }}</option>
+            {% endif %}
+          {% endfor %}
         </select>
       </div>
 
@@ -63,26 +48,21 @@
         <label for="field">Farm Field</label>
         <select id="field" name="field" class="form-control">
           {% if default_field_id %}
-          <option value="{{ default_field_id }}" selected>
-            {{ field_names[default_field_id] }}
-          </option>
-          {% endif %} {% for field in related_fields %} {% if field.id !=
-          default_field_id %}
-          <option value="{{ field.id }}">{{ field.name }}</option>
-          {% endif %} {% endfor %}
+            <option value="{{ default_field_id }}" selected>{{ field_names[default_field_id] }}</option>
+          {% endif %}
+          {% for field in related_fields %}
+            {% if field.id != default_field_id %}
+              <option value="{{ field.id }}">{{ field.name }}</option>
+            {% endif %}
+          {% endfor %}
         </select>
       </div>
 
       <div class="form-group my-4">
         <label for="truck">Truck</label>
-        <select
-          id="truck"
-          name="truck"
-          class="form-control"
-          onchange="updateTruckers()"
-        >
+        <select id="truck" name="truck" class="form-control" onchange="updateTruckers()">
           {% for truck in trucks %}
-          <option value="{{ truck.id }}">{{ truck.name }}</option>
+            <option value="{{ truck.id }}" {% if truck.id == default_truck_id %}selected{% endif %}>{{ truck.name }}</option>
           {% endfor %}
         </select>
       </div>
@@ -90,13 +70,23 @@
       <div class="form-group my-4">
         <label for="trucker">Trucker</label>
         <select id="trucker" name="trucker" class="form-control">
-          <!-- This will be dynamically populated by JavaScript -->
+          {% if default_trucker_id %}
+            <option value="{{ default_trucker_id }}" selected>{{ default_trucker_name }}</option>
+          {% endif %}
         </select>
       </div>
 
-      <button type="submit" class="btn btn-primary mb-4">
-        Create Truckload
-      </button>
+      <div class="form-group my-4">
+        <label for="load_date_time">Load Date and Time</label>
+        <input
+          type="datetime-local"
+          id="load_date_time"
+          name="load_date_time"
+          class="form-control"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary mb-4">Create Truckload</button>
     </form>
   </div>
 </div>
@@ -139,5 +129,10 @@
       truckerSelect.appendChild(option);
     }
   }
+
+  // Call updateTruckers on page load to set the initial trucker value
+  window.onload = function() {
+    updateTruckers();
+  };
 </script>
 {% endblock %}
