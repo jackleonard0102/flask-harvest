@@ -1,6 +1,91 @@
 {% extends "base.html" %} {% block content %}
 <div class="container">
-  <h2>Create New Truckload</h2>
-  <div class="card rounded mt-8"></div>
+  <h2 class="text-center" style="margin-bottom: 16px">Create New Truckload</h2>
+  <div class="card rounded mx-auto" style="max-width: 60%">
+    <form
+      class="mx-5"
+      method="POST"
+      action="{{ url_for('operator_truckload_bp.index') }}"
+    >
+      <div class="form-group my-4">
+        <label for="operator">Operator</label>
+        <input
+          type="text"
+          id="operator"
+          name="operator"
+          value="{{ current_user.username }}"
+          readonly
+          class="form-control"
+        />
+      </div>
+
+      <div class="form-group my-4">
+        <label for="harvest_rig">Harvest Rig</label>
+        {% for rig in harvest_rigs %} {% if rig.current_operator_id ==
+        current_user.id %}
+        <input
+          type="text"
+          id="harvest_rig_name"
+          name="harvest_rig_name"
+          class="form-control"
+          value="{{ rig.name }}"
+          readonly
+        />
+        <input
+          type="hidden"
+          id="harvest_rig_id"
+          name="harvest_rig_id"
+          value="{{ rig.id }}"
+        />
+        {% endif %} {% endfor %}
+      </div>
+
+      <div class="form-group my-4">
+        <label for="harvest">Harvest</label>
+        <select id="harvest" name="harvest" class="form-control">
+          {% if default_harvest_id %}
+          <!-- Default selected option -->
+          <option value="{{ default_harvest_id }}" selected>
+            {{ harvest_names[default_harvest_id] }}
+          </option>
+          {% endif %} {% for harvest_id, harvest_name in harvest_names.items()
+          %} {% if harvest_id != default_harvest_id %}
+          <option value="{{ harvest_id }}">{{ harvest_name }}</option>
+          {% endif %} {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group my-4">
+        <label for="field">Farm Field</label>
+        <select id="field" name="field" class="form-control">
+          {% for field in fields %}
+          <option value="{{ field.id }}">{{ field.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group my-4">
+        <label for="truck">Truck</label>
+        <select id="truck" name="truck" class="form-control">
+          {% for truck in trucks %}
+          <option value="{{ truck.id }}">{{ truck.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group my-4">
+        <label for="trucker">Trucker</label>
+        <select id="trucker" name="trucker" class="form-control">
+          {% for trucker in truckers %}
+          <option value="{{ trucker.id }}">{{ trucker.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary mb-4">
+        Create Truckload
+      </button>
+    </form>
+  </div>
 </div>
 {% endblock %}
