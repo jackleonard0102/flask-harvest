@@ -25,7 +25,7 @@ class User(UserMixin, TimestampMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
-    permission = db.Column(db.Integer, nullable=False)  # 0: Superadmin, 1: Admin, 2: Subuser
+    permission = db.Column(db.Integer, nullable=False)  
 
     def verify_password(self, password):
         # Ensure password_hash is not None or empty
@@ -40,7 +40,7 @@ class Customer(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     address = db.Column(db.String(255), nullable=False)
-    status = db.Column(db.Integer, nullable=False)  # 0: active, 1: disable
+    status = db.Column(db.String(255), nullable=False)
     users = db.relationship('User', backref='customer', lazy=True)
 
     def soft_delete(self):
@@ -107,6 +107,7 @@ class Truckload(TimestampMixin, db.Model):
     harvest_id = db.Column(db.Integer, db.ForeignKey('harvest.id'), nullable=False)
     yield_amount = db.Column(db.Float)
     yield_type = db.Column(db.String(80))
+    trucker_confirmation = db.Column(db.Integer, nullable=False) # 0: not confirmed, 1: confirmed
 
     harvest_rig = db.relationship('HarvestRig', backref='truckloads', lazy=True)
     operator = db.relationship('User', foreign_keys=[operator_id], backref='operator_truckloads', lazy=True)

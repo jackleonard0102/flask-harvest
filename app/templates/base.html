@@ -226,6 +226,14 @@
                 >Harvest Rig</a
               >
             </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'operator_truckload_bp.index' %}active{% endif %}"
+                aria-current="page"
+                href="{{ url_for('operator_truckload_bp.index') }}"
+                >TruckLoad</a
+              >
+            </li>
             {% elif current_user.permission == 4 %}
             <!-- Trucker Navbar -->
             <!-- Add specific links for trucker if needed -->
