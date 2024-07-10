@@ -44,11 +44,13 @@ def index():
     fields_list = [{'id': field.id, 'name': field.name, 'farm_id': field.farm_id} for field in fields]
     
     trucks = Truck.query.filter(Truck.company_id == current_user.company_id, Truck.current_driver_id != "").all()
+    trucks_list = [{'id': truck.id, 'name': truck.name, 'current_driver_id': truck.current_driver_id} for truck in trucks]
     
     harvest_rigs = HarvestRig.query.filter_by(company_id=current_user.company_id).all()
     
     truckers = User.query.filter_by(company_id=current_user.company_id).all()
-    
+    truckers_list = [{'id': trucker.id, 'username': trucker.username} for trucker in truckers]
+
     # Fetch the last record of harvest_id and field_id from Truckload table for default values
     last_truckload = Truckload.query.order_by(Truckload.id.desc()).first()
     default_harvest_id = last_truckload.harvest_id if last_truckload else None
@@ -75,9 +77,9 @@ def index():
         harvests=harvests_list, 
         fields=fields_list, 
         related_fields=related_fields,
-        trucks=trucks, 
+        trucks=trucks_list, 
         harvest_rigs=harvest_rigs, 
-        truckers=truckers,
+        truckers=truckers_list,
         default_harvest_id=default_harvest_id,
         default_field_id=default_field_id,
         harvest_per_field_ids=harvest_per_field_ids,

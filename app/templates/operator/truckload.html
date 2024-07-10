@@ -75,7 +75,12 @@
 
       <div class="form-group my-4">
         <label for="truck">Truck</label>
-        <select id="truck" name="truck" class="form-control">
+        <select
+          id="truck"
+          name="truck"
+          class="form-control"
+          onchange="updateTruckers()"
+        >
           {% for truck in trucks %}
           <option value="{{ truck.id }}">{{ truck.name }}</option>
           {% endfor %}
@@ -85,9 +90,7 @@
       <div class="form-group my-4">
         <label for="trucker">Trucker</label>
         <select id="trucker" name="trucker" class="form-control">
-          {% for trucker in truckers %}
-          <option value="{{ trucker.id }}">{{ trucker.username }}</option>
-          {% endfor %}
+          <!-- This will be dynamically populated by JavaScript -->
         </select>
       </div>
 
@@ -101,6 +104,8 @@
 <script>
   const fields = {{ fields|tojson }};
   const harvests = {{ harvests|tojson }};
+  const trucks = {{ trucks|tojson }};
+  const truckers = {{ truckers|tojson }};
 
   function updateFields() {
     const harvestId = document.getElementById('harvest').value;
@@ -116,6 +121,23 @@
       option.textContent = field.name;
       fieldSelect.appendChild(option);
     });
+  }
+
+  function updateTruckers() {
+    const truckId = document.getElementById('truck').value;
+    const truckerSelect = document.getElementById('trucker');
+
+    truckerSelect.innerHTML = '';
+
+    const selectedTruck = trucks.find(truck => truck.id == truckId);
+    const driver = truckers.find(trucker => trucker.id == selectedTruck.current_driver_id);
+
+    if (driver) {
+      const option = document.createElement('option');
+      option.value = driver.id;
+      option.textContent = driver.username;
+      truckerSelect.appendChild(option);
+    }
   }
 </script>
 {% endblock %}
