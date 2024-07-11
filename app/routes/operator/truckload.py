@@ -13,10 +13,16 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
     
-    unfinished_truckload = Truckload.query.filter_by(trucker_confirmation=0, operator_id=current_user.id).first()
+    unfinished_truckload = Truckload.query.filter(
+        Truckload.operator_id == current_user.id,
+        db.or_(
+            Truckload.trucker_confirmation == 0,
+            Truckload.yield_amount == None,
+            Truckload.yield_type == None
+        )
+    ).first()
     if unfinished_truckload:
         return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=unfinished_truckload.id))
-
 
     if request.method == 'POST':
         harvest_rig_id = request.form.get('harvest_rig_id')
@@ -123,7 +129,13 @@ def show_truckload(truckload_id):
 def finish_truckload(truckload_id):
     truckload = Truckload.query.get_or_404(truckload_id)
     
-    if truckload.trucker_confirmation == 1 and truckload.yield_amount and truckload.yield_type:
+    if truckload.trucker_confirmation == 0:
+        flash("Ensure trucker confirmation is done.")
+        return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=truckload.id))
+    elif not truckload.yield_amount or not truckload.yield_type:
+        flash("Ensure yield data is present.")
+        return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=truckload.id))
+    elif truckload.trucker_confirmation != 0 and truckload.yield_amount and truckload.yield_type:
         truckload.unload_date_time = datetime.utcnow()
         truckload.trucker_confirmation = 2
         db.session.commit()
@@ -132,6 +144,7 @@ def finish_truckload(truckload_id):
     else:
         flash("Unable to finish current truckload. Ensure trucker confirmation and yield data is present.")
         return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=truckload.id))
+
 
 @operator_truckload_bp.route('/truckload/cancel/<int:truckload_id>', methods=['POST'])
 @login_required

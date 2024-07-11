@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, logout_user, current_user
-from app.models import HarvestRig, Customer
+from app.models import HarvestRig, Customer, Truckload
 from app.extensions import db
+from datetime import datetime
 
 operator_rig_bp = Blueprint('operator_rig_bp', __name__)
 
@@ -34,6 +35,23 @@ def select_rig():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
+    # Check for unfinished truckloads
+    unfinished_truckload = Truckload.query.filter(
+        Truckload.operator_id == current_user.id,
+        db.or_(
+            Truckload.trucker_confirmation == 0,
+            Truckload.yield_amount == None,
+            Truckload.yield_type == None
+        )
+    ).first()
+
+    # Debug statement
+    print(f"Unfinished Truckload: {unfinished_truckload}")
+
+    if unfinished_truckload:
+        flash("You have unfinished truckloads. Please complete them before selecting a new rig.")
+        return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=unfinished_truckload.id))
+
     rig_id = request.form['rig_id']
     rig = HarvestRig.query.get_or_404(rig_id)
 
@@ -56,6 +74,22 @@ def select_rig():
 def select_rig_ajax():
     if current_user.permission != 2:
         return jsonify({'error': 'Unauthorized access'}), 403
+
+    # Check for unfinished truckloads
+    unfinished_truckload = Truckload.query.filter(
+        Truckload.operator_id == current_user.id,
+        db.or_(
+            Truckload.trucker_confirmation == 0,
+            Truckload.yield_amount == None,
+            Truckload.yield_type == None
+        )
+    ).first()
+
+    # Debug statement
+    print(f"Unfinished Truckload (AJAX): {unfinished_truckload}")
+
+    if unfinished_truckload:
+        return jsonify({'error': 'You have unfinished truckloads. Please complete them before selecting a new rig.'}), 403
 
     rig_id = request.form['rig_id']
     rig = HarvestRig.query.get_or_404(rig_id)
