@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, logout_user, current_user
-from app.models import Truck, Customer
+from app.models import Truck, Customer, Truckload
 from app.extensions import db
-from flask import jsonify
 
 trucker_bp = Blueprint('trucker_bp', __name__)
 
@@ -62,27 +61,38 @@ def select_truck_ajax():
     truck_id = request.form['truck_id']
     truck = Truck.query.get_or_404(truck_id)
 
+    # If the truck is already selected by the current user, cancel the selection
     if truck.current_driver_id == current_user.id:
-        # If the truck is already selected by the current user, deselect it
         truck.current_driver_id = ''
+        message = f'Truck {truck.name} successfully deselected by {current_user.username}!'
     else:
-        # Otherwise, select the truck for the current user
+        # Update the truck's current driver to the current user
         truck.current_driver_id = current_user.id
+        message = f'Truck {truck.name} successfully selected by {current_user.username}!'
 
     db.session.commit()
-    return jsonify({
-        'truck_id': truck.id,
-        'current_driver_id': truck.current_driver_id,
-        'current_driver_name': current_user.username if truck.current_driver_id == current_user.id else ''
-    })
+    return jsonify({'message': message, 'truck_id': truck.id, 'current_driver_name': current_user.username})
 
-@trucker_bp.route('/logout')
+@trucker_bp.route('/check_unconfirmed_truckloads', methods=['GET'])
 @login_required
-def logout():
-    trucks = Truck.query.filter_by(current_driver_id=current_user.id).all()
-    for truck in trucks:
-        truck.current_driver_id = ''
-    db.session.commit()
+def check_unconfirmed_truckloads():
+    truckload = Truckload.query.filter_by(trucker_id=current_user.id, trucker_confirmation=0).first()
 
-    logout_user()
-    return redirect(url_for('main.home'))
+    if truckload:
+        return jsonify({'unconfirmed': True, 'truckload_id': truckload.id})
+    else:
+        return jsonify({'unconfirmed': False})
+
+@trucker_bp.route('/confirm_truckload', methods=['POST'])
+@login_required
+def confirm_truckload():
+    data = request.get_json()
+    truckload_id = data.get('truckload_id')
+    truckload = Truckload.query.get_or_404(truckload_id)
+
+    if truckload.trucker_id == current_user.id:
+        truckload.trucker_confirmation = 1
+        db.session.commit()
+        return jsonify({'success': True})
+    else:
+        return jsonify({'error': 'Unauthorized access'}), 403

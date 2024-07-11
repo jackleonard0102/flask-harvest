@@ -13,9 +13,10 @@ def index():
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
     
-    unfinished_truckload = Truckload.query.filter(Truckload.trucker_confirmation ==0, Truckload.operator_id == current_user.id).all()
+    unfinished_truckload = Truckload.query.filter_by(trucker_confirmation=0, operator_id=current_user.id).first()
     if unfinished_truckload:
         return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=unfinished_truckload.id))
+
 
     if request.method == 'POST':
         harvest_rig_id = request.form.get('harvest_rig_id')

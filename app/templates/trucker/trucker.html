@@ -1,9 +1,13 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="container">
   <h2>Trucks</h2>
   <div class="d-flex justify-content-between align-items-center my-3">
-    <input type="text" class="form-control w-50" id="searchBox" placeholder="Search trucks..." />
+    <input
+      type="text"
+      class="form-control w-50"
+      id="searchBox"
+      placeholder="Search trucks..."
+    />
   </div>
 
   <table class="table">
@@ -25,15 +29,24 @@
         <td class="text-center align-middle">{{ truck.year }}</td>
         <td class="text-center align-middle">{{ truck.vin }}</td>
         <td class="text-center align-middle driver-cell">
-          {{ truck.current_driver_id == current_user.id and current_user.username or '' }}
+          {{ truck.current_driver_id == current_user.id and
+          current_user.username or '' }}
         </td>
         <td class="text-center align-middle">
-          <form method="POST" action="{{ url_for('trucker_bp.select_truck_ajax') }}" class="select-truck-form">
+          <form
+            method="POST"
+            action="{{ url_for('trucker_bp.select_truck_ajax') }}"
+            class="select-truck-form"
+          >
             <input type="hidden" name="truck_id" value="{{ truck.id }}" />
-            <button type="submit" class="btn select-truck-button"
+            <button
+              type="submit"
+              class="btn select-truck-button"
               data-current-driver-id="{{ truck.current_driver_id }}"
-              data-current-user-id="{{ current_user.id }}">
-              {% if truck.current_driver_id == current_user.id %} Cancel {% else %} Select {% endif %}
+              data-current-user-id="{{ current_user.id }}"
+            >
+              {% if truck.current_driver_id == current_user.id %} Cancel {% else
+              %} Select {% endif %}
             </button>
           </form>
         </td>
@@ -41,11 +54,25 @@
       {% endfor %}
     </tbody>
   </table>
+  <div
+    id="alertContainer"
+    style="display: none"
+    class="alert alert-warning"
+    role="alert"
+  >
+    <p id="alertMessage"></p>
+    <button id="confirmButton" class="btn btn-success">Confirm</button>
+  </div>
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const selectButtons = document.querySelectorAll(".select-truck-button");
+
+    // Refresh the page every 30 seconds
+    setInterval(function () {
+      location.reload();
+    }, 30000);
 
     // Check if any truck is currently assigned to the current user
     let userHasTruck = false;
@@ -95,7 +122,9 @@
               return;
             }
 
-            const truckRow = document.querySelector(`tr[data-truck-id='${data.truck_id}']`);
+            const truckRow = document.querySelector(
+              `tr[data-truck-id='${data.truck_id}']`
+            );
             const driverCell = truckRow.querySelector(".driver-cell");
 
             if (isCancel) {
@@ -120,6 +149,40 @@
           });
       });
     });
+
+    // Check for unconfirmed truckloads and show alert if necessary
+    fetch("{{ url_for('trucker_bp.check_unconfirmed_truckloads') }}")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.unconfirmed) {
+          const alertContainer = document.getElementById("alertContainer");
+          const alertMessage = document.getElementById("alertMessage");
+          const confirmButton = document.getElementById("confirmButton");
+
+          alertMessage.innerText = `Truckload ${data.truckload_id} requires your confirmation.`;
+          alertContainer.style.display = "block";
+
+          confirmButton.addEventListener("click", function () {
+            fetch("{{ url_for('trucker_bp.confirm_truckload') }}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+              },
+              body: JSON.stringify({ truckload_id: data.truckload_id }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  alertContainer.style.display = "none";
+                  location.reload(); // Optional: to refresh the page
+                } else {
+                  alert(data.error);
+                }
+              });
+          });
+        }
+      });
   });
 </script>
 {% endblock %}
