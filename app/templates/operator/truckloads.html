@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <h2 class="text-center align-middle">Truckload Details</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="text-center align-middle">ID</th>
+        <th class="text-center align-middle">Operator</th>
+        <th class="text-center align-middle">Harvest Rig</th>
+        <th class="text-center align-middle">Harvest</th>
+        <th class="text-center align-middle">Field</th>
+        <th class="text-center align-middle">Truck</th>
+        <th class="text-center align-middle">Trucker</th>
+        <th class="text-center align-middle">Load Date and Time</th>
+        <th class="text-center align-middle">Unload Date and Time</th>
+        <th class="text-center align-middle">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-center align-middle">{{ truckload.id }}</td>
+        <td class="text-center align-middle">
+          {{ truckload.operator.username }}
+        </td>
+        <td class="text-center align-middle">
+          {{ truckload.harvest_rig.name }}
+        </td>
+        <td class="text-center align-middle">{{ truckload.harvest.name }}</td>
+        <td class="text-center align-middle">{{ truckload.field.name }}</td>
+        <td class="text-center align-middle">{{ truckload.truck.name }}</td>
+        <td class="text-center align-middle">
+          {{ truckload.trucker.username }}
+        </td>
+        <td class="text-center align-middle">
+          {{ truckload.load_date_time.strftime('%Y-%m-%d %H:%M') }}
+        </td>
+        <td class="text-center align-middle">
+          {% if truckload.unload_date_time %} {{
+          truckload.unload_date_time.strftime('%Y-%m-%d %H:%M') }} {% else %} In
+          Progress {% endif %}
+        </td>
+        <td class="text-center align-middle">
+          {% if not truckload.unload_date_time %}
+          <form
+            method="POST"
+            action="{{ url_for('operator_truckload_bp.finish_truckload', truckload_id=truckload.id) }}"
+            style="display: inline; margin-right: 3px"
+          >
+            <button type="submit" class="btn btn-primary">Finish</button>
+          </form>
+          <form
+            method="POST"
+            action="{{ url_for('operator_truckload_bp.cancel_truckload', truckload_id=truckload.id) }}"
+            style="display: inline; margin-left: 3px"
+          >
+            <button type="submit" class="btn btn-danger">Cancel</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

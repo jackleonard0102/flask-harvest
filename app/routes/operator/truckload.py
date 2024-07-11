@@ -12,6 +12,10 @@ def index():
     if current_user.permission != 2:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
+    
+    unfinished_truckload = Truckload.query.filter(Truckload.trucker_confirmation ==0, Truckload.operator_id == current_user.id).all()
+    if unfinished_truckload:
+        return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=unfinished_truckload.id))
 
     if request.method == 'POST':
         harvest_rig_id = request.form.get('harvest_rig_id')
@@ -37,7 +41,7 @@ def index():
         db.session.add(new_truckload)
         db.session.commit()
         flash("New truckload created successfully!")
-        return redirect(url_for('operator_truckload_bp.index'))
+        return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=new_truckload.id))
 
     # Data fetching for GET request
     farms = Farm.query.filter_by(company_id=current_user.company_id).all()
@@ -105,6 +109,37 @@ def index():
         harvest_names=harvest_names,
         field_names=field_names
     )
+
+@operator_truckload_bp.route('/truckload/in_progress/<int:truckload_id>', methods=['GET'])
+@login_required
+def show_truckload(truckload_id):
+    truckload = Truckload.query.get_or_404(truckload_id)
+    return render_template('operator/truckloads.html', truckload=truckload)
+
+
+@operator_truckload_bp.route('/truckload/finish/<int:truckload_id>', methods=['POST'])
+@login_required
+def finish_truckload(truckload_id):
+    truckload = Truckload.query.get_or_404(truckload_id)
+    
+    if truckload.trucker_confirmation == 1 and truckload.yield_amount and truckload.yield_type:
+        truckload.unload_date_time = datetime.utcnow()
+        truckload.trucker_confirmation = 2
+        db.session.commit()
+        flash("Truckload finished successfully!")
+        return redirect(url_for('operator_truckload_bp.index'))
+    else:
+        flash("Unable to finish current truckload. Ensure trucker confirmation and yield data is present.")
+        return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=truckload.id))
+
+@operator_truckload_bp.route('/truckload/cancel/<int:truckload_id>', methods=['POST'])
+@login_required
+def cancel_truckload(truckload_id):
+    truckload = Truckload.query.get_or_404(truckload_id)
+    db.session.delete(truckload)
+    db.session.commit()
+    flash("Truckload canceled successfully!")
+    return redirect(url_for('operator_truckload_bp.index'))
 
 @operator_truckload_bp.route('/logout')
 @login_required
