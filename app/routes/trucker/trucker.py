@@ -79,9 +79,20 @@ def check_unconfirmed_truckloads():
     truckload = Truckload.query.filter_by(trucker_id=current_user.id, trucker_confirmation=0).first()
 
     if truckload:
-        return jsonify({'unconfirmed': True, 'truckload_id': truckload.id})
+        harvest_name = truckload.harvest.name  # Assuming there is a relationship defined
+        field_name = truckload.field.name  # Assuming there is a relationship defined
+        load_date_time = truckload.load_date_time.strftime('%Y-%m-%d %H:%M:%S')  # Format as needed
+
+        return jsonify({
+            'unconfirmed': True,
+            'truckload_id': truckload.id,
+            'harvest_name': harvest_name,
+            'field_name': field_name,
+            'load_date_time': load_date_time
+        })
     else:
         return jsonify({'unconfirmed': False})
+
 
 @trucker_bp.route('/confirm_truckload', methods=['POST'])
 @login_required
