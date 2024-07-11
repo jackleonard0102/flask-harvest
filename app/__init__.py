@@ -29,6 +29,7 @@ from app.routes.auth.harvest_rig import auth_harvest_rig_bp
 from app.routes.trucker.trucker import trucker_bp
 from app.routes.operator.rig import operator_rig_bp
 from app.routes.operator.truckload  import operator_truckload_bp
+from app.routes.office.truckloads import office_truckloads_bp
 
 migrate = Migrate()
 
@@ -95,6 +96,7 @@ def create_app():
     app.register_blueprint(trucker_bp)
     app.register_blueprint(operator_rig_bp)
     app.register_blueprint(operator_truckload_bp)
+    app.register_blueprint(office_truckloads_bp)
     
     app.cli.add_command(init_db)
     setup_admin(app, db)

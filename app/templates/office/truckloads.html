@@ -1,0 +1,132 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <h2>Truckloads</h2>
+  <div class="d-flex justify-content-between align-items-center my-3">
+    <input
+      type="text"
+      class="form-control w-50"
+      id="searchBox"
+      placeholder="Search truckloads..."
+    />
+  </div>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th class="text-center">No</th>
+        <th class="text-center">Harvest Rig</th>
+        <th class="text-center">Operator</th>
+        <th class="text-center">Truck</th>
+        <th class="text-center">Trucker</th>
+        <th class="text-center">Field</th>
+        <th class="text-center">Harvest</th>
+        <th class="text-center">Load Date Time</th>
+        <th class="text-center">Unload Date Time</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="truckloadTableBody">
+      {% for truckload in truckloads %}
+      <tr>
+        <td class="text-center align-middle">{{ loop.index }}</td>
+        <td class="text-center align-middle">
+          {{ truckload.harvest_rig.name }}
+        </td>
+        <td class="text-center align-middle">
+          {{ truckload.operator.username }}
+        </td>
+        <td class="text-center align-middle">{{ truckload.truck.name }}</td>
+        <td class="text-center align-middle">
+          {{ truckload.trucker.username }}
+        </td>
+        <td class="text-center align-middle">{{ truckload.field.name }}</td>
+        <td class="text-center align-middle">{{ truckload.harvest.name }}</td>
+        <td class="text-center align-middle">{{ truckload.load_date_time }}</td>
+        <td class="text-center align-middle">
+          {% if truckload.unload_date_time %} {{
+          truckload.unload_date_time.strftime('%Y-%m-%d %H:%M') }} {% else %} In
+          Progress {% endif %}
+        </td>
+        <td class="text-center align-middle">
+          <button
+            class="btn btn-sm"
+            style="background-color: transparent; border: none"
+            data-bs-toggle="modal"
+            data-bs-target="#editTruckloadModal{{ truckload.id }}"
+          >
+            <i class="bi bi-pencil-square text-primary fs-4"></i>
+          </button>
+        </td>
+      </tr>
+
+      <!-- Edit Truckload Modal -->
+      <div
+        class="modal fade"
+        id="editTruckloadModal{{ truckload.id }}"
+        tabindex="-1"
+        aria-labelledby="editTruckloadModalLabel{{ truckload.id }}"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form
+              method="POST"
+              action="{{ url_for('office_truckloads_bp.edit_truckload', truckload_id=truckload.id) }}"
+            >
+              <div class="modal-header">
+                <h5
+                  class="modal-title"
+                  id="editTruckloadModalLabel{{ truckload.id }}"
+                >
+                  Update Truckload
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group mb-3">
+                  <label for="yield_amount{{ truckload.id }}"
+                    >Yield Amount</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="yield_amount{{ truckload.id }}"
+                    name="yield_amount"
+                    value="{{ truckload.yield_amount }}"
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="yield_type{{ truckload.id }}">Yield Type</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="yield_type{{ truckload.id }}"
+                    name="yield_type"
+                    value="{{ truckload.yield_type }}"
+                  />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
