@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from app.models import Truckload
+from app.models import Truckload, HarvestPerField
 from app.extensions import db
 
 office_truckloads_bp = Blueprint('office_truckloads_bp', __name__)
@@ -30,12 +30,30 @@ def edit_truckload(truckload_id):
     yield_amount = request.form['yield_amount']
     yield_type = request.form['yield_type']
 
-    if not yield_amount or not yield_type:
-        flash('All fields are required.')
+    try:
+        yield_amount = float(yield_amount)
+        if yield_amount < 0:
+            raise ValueError("Yield amount cannot be negative.")
+    except ValueError as e:
+        flash('Invalid yield amount: {}'.format(e))
         return redirect(url_for('office_truckloads_bp.index'))
 
+    if not yield_type or yield_type not in ['bushels', 'pounds', 'tons']:
+        flash('Invalid yield type.')
+        return redirect(url_for('office_truckloads_bp.index'))
+
+    # Update Truckload data
     truckload.yield_amount = yield_amount
     truckload.yield_type = yield_type
+
+    # Update HarvestPerField data
+    harvest_per_field = HarvestPerField(
+        harvest_id=truckload.harvest_id,
+        field_id=truckload.field_id,
+        yield_amount=yield_amount,
+        yield_type=yield_type
+    )
+    db.session.add(harvest_per_field)
 
     db.session.commit()
     flash('Truckload successfully updated!')

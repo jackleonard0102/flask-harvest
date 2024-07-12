@@ -45,10 +45,20 @@
         <td class="text-center align-middle">{{ truckload.trucker.username }}</td>
         <td class="text-center align-middle">{{ truckload.harvest.name }}</td>
         <td class="text-center align-middle">{{ truckload.field.name }}</td>
-        <td class="text-center align-middle">{{ truckload.yield_amount }}</td>
-        <td class="text-center align-middle">{{ truckload.yield_type }}</td>
-        <td class="text-center align-middle">{{ truckload.load_date_time }}</td>
-        <td class="text-center align-middle">{{ truckload.unload_date_time }}</td>
+        <td class="text-center align-middle">{% if truckload.yield_amount %} {{
+          truckload.yield_amount }} {% else %} In
+          Progress {% endif %}</td>
+        <td class="text-center align-middle">{% if truckload.yield_type %} {{
+          truckload.yield_type }} {% else %} In
+          Progress {% endif %}</td>
+        <td class="text-center align-middle">{% if truckload.load_date_time %} {{
+          truckload.load_date_time.strftime('%Y-%m-%d %H:%M') }} {% else %} In
+          Progress {% endif %}</td>
+        <td class="text-center align-middle">
+          {% if truckload.unload_date_time %} {{
+          truckload.unload_date_time.strftime('%Y-%m-%d %H:%M') }} {% else %} In
+          Progress {% endif %}
+        </td>
         <td class="text-center align-middle">
           <button
             class="btn btn-sm"

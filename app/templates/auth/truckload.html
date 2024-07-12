@@ -51,7 +51,9 @@
         <td class="text-center align-middle">{% if truckload.yield_type %} {{
           truckload.yield_type }} {% else %} In
           Progress {% endif %}</td>
-        <td class="text-center align-middle">{{ truckload.load_date_time }}</td>
+        <td class="text-center align-middle">{% if truckload.load_date_time %} {{
+          truckload.load_date_time.strftime('%Y-%m-%d %H:%M') }} {% else %} In
+          Progress {% endif %}</td>
         <td class="text-center align-middle">
           {% if truckload.unload_date_time %} {{
           truckload.unload_date_time.strftime('%Y-%m-%d %H:%M') }} {% else %} In

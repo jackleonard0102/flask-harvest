@@ -74,10 +74,7 @@
               action="{{ url_for('office_truckloads_bp.edit_truckload', truckload_id=truckload.id) }}"
             >
               <div class="modal-header">
-                <h5
-                  class="modal-title"
-                  id="editTruckloadModalLabel{{ truckload.id }}"
-                >
+                <h5 class="modal-title" id="editTruckloadModalLabel{{ truckload.id }}">
                   Update Truckload
                 </h5>
                 <button
@@ -89,26 +86,88 @@
               </div>
               <div class="modal-body">
                 <div class="form-group mb-3">
-                  <label for="yield_amount{{ truckload.id }}"
-                    >Yield Amount</label
-                  >
+                  <label for="harvest{{ truckload.id }}">Harvest</label>
                   <input
                     type="text"
                     class="form-control"
+                    id="harvest{{ truckload.id }}"
+                    value="{{ truckload.harvest.name }}"
+                    readonly
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="field{{ truckload.id }}">Field</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="field{{ truckload.id }}"
+                    value="{{ truckload.field.name }}"
+                    readonly
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="operator{{ truckload.id }}">Operator</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="operator{{ truckload.id }}"
+                    value="{{ truckload.operator.username }}"
+                    readonly
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="harvest_rig{{ truckload.id }}">Harvest Rig</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="harvest_rig{{ truckload.id }}"
+                    value="{{ truckload.harvest_rig.name }}"
+                    readonly
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="trucker{{ truckload.id }}">Trucker</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="trucker{{ truckload.id }}"
+                    value="{{ truckload.trucker.username }}"
+                    readonly
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="truck{{ truckload.id }}">Truck</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="truck{{ truckload.id }}"
+                    value="{{ truckload.truck.name }}"
+                    readonly
+                  />
+                </div>
+                <div class="form-group mb-3">
+                  <label for="yield_amount{{ truckload.id }}">Yield Amount</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    class="form-control"
                     id="yield_amount{{ truckload.id }}"
                     name="yield_amount"
-                    value="{{ truckload.yield_amount }}"
+                    value="{{ truckload.yield_amount or '0.00' }}"
                   />
                 </div>
                 <div class="form-group mb-3">
                   <label for="yield_type{{ truckload.id }}">Yield Type</label>
-                  <input
-                    type="text"
+                  <select
                     class="form-control"
                     id="yield_type{{ truckload.id }}"
                     name="yield_type"
-                    value="{{ truckload.yield_type }}"
-                  />
+                  >
+                    <option value="bushels" {% if truckload.yield_type == "bushels" %} selected {% endif %}>Bushels</option>
+                    <option value="pounds" {% if truckload.yield_type == "pounds" %} selected {% endif %}>Pounds</option>
+                    <option value="tons" {% if truckload.yield_type == "tons" %} selected {% endif %}>Tons</option>
+                  </select>
                 </div>
               </div>
               <div class="modal-footer">
@@ -125,6 +184,7 @@
           </div>
         </div>
       </div>
+
       {% endfor %}
     </tbody>
   </table>
