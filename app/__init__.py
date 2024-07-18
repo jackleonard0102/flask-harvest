@@ -8,6 +8,7 @@ from .admin import setup_admin
 from .commands import init_db
 from app.models import User
 from app.routes.authentication import auth_bp
+from app.routes.profile import profile_bp
 from app.routes.main import main_bp
 from app.routes.admin.company import admin_company_bp
 from app.routes.admin.user import admin_user_bp
@@ -73,6 +74,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(profile_bp)
     
     app.register_blueprint(admin_company_bp)
     app.register_blueprint(admin_user_bp)

@@ -256,6 +256,14 @@
                 class="dropdown-menu dropdown-menu-end"
                 aria-labelledby="navbarDropdownMenuLink"
               >
+                {% if current_user.permission == 0 or current_user.permission ==
+                1 %}
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('profile.index') }}"
+                    >Profile</a
+                  >
+                </li>
+                {% endif %}
                 <li>
                   <a
                     class="dropdown-item"
