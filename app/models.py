@@ -25,10 +25,9 @@ class User(UserMixin, TimestampMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
-    permission = db.Column(db.Integer, nullable=False)  
+    permission = db.Column(db.Integer, nullable=False)
 
     def verify_password(self, password):
-        # Ensure password_hash is not None or empty
         if not self.password_hash:
             return False
         return bcrypt.check_password_hash(self.password_hash, password)
