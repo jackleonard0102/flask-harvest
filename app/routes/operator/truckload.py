@@ -132,10 +132,10 @@ def finish_truckload(truckload_id):
     if truckload.trucker_confirmation == 0:
         flash("Ensure trucker confirmation is done.")
         return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=truckload.id))
-    elif not truckload.yield_amount or not truckload.yield_type:
-        flash("Ensure yield data is present.")
-        return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=truckload.id))
-    elif truckload.trucker_confirmation != 0 and truckload.yield_amount and truckload.yield_type:
+    # elif not truckload.yield_amount or not truckload.yield_type:
+    #     flash("Ensure yield data is present.")
+    #     return redirect(url_for('operator_truckload_bp.show_truckload', truckload_id=truckload.id))
+    elif truckload.trucker_confirmation != 0 :
         truckload.unload_date_time = datetime.utcnow()
         truckload.trucker_confirmation = 2
         db.session.commit()
