@@ -3,12 +3,12 @@ from flask_login import login_required, current_user
 from app.models import Truckload, HarvestPerField
 from app.extensions import db
 
-office_truckloads_bp = Blueprint('office_truckloads_bp', __name__)
+trucker_truckloads_bp = Blueprint('trucker_truckloads_bp', __name__)
 
-@office_truckloads_bp.route('/office/truckload')
+@trucker_truckloads_bp.route('/trucker/truckload')
 @login_required
 def index():
-    if current_user.permission != 3:
+    if current_user.permission != 4:
         flash('Unauthorized access')
         return redirect(url_for('main.home'))
 
@@ -17,15 +17,15 @@ def index():
         Truckload.yield_type.is_(None)
     ).all()
     
-    return render_template('office/truckloads.html', current_user=current_user, truckloads=truckloads)
+    return render_template('trucker/truckload.html', current_user=current_user, truckloads=truckloads)
 
-@office_truckloads_bp.route('/office/edit_truckload/<int:truckload_id>', methods=['POST'])
+@trucker_truckloads_bp.route('/trucker/edit_truckload/<int:truckload_id>', methods=['POST'])
 @login_required
 def edit_truckload(truckload_id):
     truckload = Truckload.query.get_or_404(truckload_id)
-    if current_user.permission != 3:
+    if current_user.permission != 4:
         flash('Unauthorized access')
-        return redirect(url_for('office_truckloads_bp.index'))
+        return redirect(url_for('trucker_truckloads_bp.index'))
 
     yield_amount = request.form.get('yield_amount', type=float)
     yield_type = request.form.get('yield_type')
@@ -33,12 +33,12 @@ def edit_truckload(truckload_id):
     # Validate yield_amount
     if yield_amount is None or yield_amount < 0:
         flash('Invalid yield amount: Must be a non-negative number.')
-        return redirect(url_for('office_truckloads_bp.index'))
+        return redirect(url_for('trucker_truckloads_bp.index'))
 
     # Validate yield_type
     if yield_type not in ['bushels', 'pounds', 'tons']:
         flash('Invalid yield type: Must be one of "bushels", "pounds", or "tons".')
-        return redirect(url_for('office_truckloads_bp.index'))
+        return redirect(url_for('trucker_truckloads_bp.index'))
 
     # Update Truckload data
     truckload.yield_amount = yield_amount
@@ -55,4 +55,4 @@ def edit_truckload(truckload_id):
 
     db.session.commit()
     flash('Truckload successfully updated!')
-    return redirect(url_for('office_truckloads_bp.index'))
+    return redirect(url_for('trucker_truckloads_bp.index'))

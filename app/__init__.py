@@ -31,6 +31,7 @@ from app.routes.trucker.trucker import trucker_bp
 from app.routes.operator.rig import operator_rig_bp
 from app.routes.operator.truckload  import operator_truckload_bp
 from app.routes.office.truckloads import office_truckloads_bp
+from app.routes.trucker.truckload import trucker_truckloads_bp
 
 migrate = Migrate()
 
@@ -96,6 +97,7 @@ def create_app():
     app.register_blueprint(auth_truckload_bp)
     
     app.register_blueprint(trucker_bp)
+    app.register_blueprint(trucker_truckloads_bp)
     app.register_blueprint(operator_rig_bp)
     app.register_blueprint(operator_truckload_bp)
     app.register_blueprint(office_truckloads_bp)

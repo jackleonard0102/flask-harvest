@@ -237,6 +237,22 @@
             </li>
             {% elif current_user.permission == 4 %}
             <!-- Trucker Navbar -->
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'trucker_bp.index' %}active{% endif %}"
+                aria-current="page"
+                href="{{ url_for('trucker_bp.index') }}"
+                >Trucker</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link {% if request.endpoint == 'trucker_truckloads_bp.index' %}active{% endif %}"
+                aria-current="page"
+                href="{{ url_for('trucker_truckloads_bp.index') }}"
+                >Truckload</a
+              >
+            </li>
             <!-- Add specific links for trucker if needed -->
             {% endif %}
           </ul>
