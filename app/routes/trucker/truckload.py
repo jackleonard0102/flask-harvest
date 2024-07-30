@@ -14,7 +14,8 @@ def index():
 
     truckloads = Truckload.query.filter(
         Truckload.yield_amount.is_(None),
-        Truckload.yield_type.is_(None)
+        Truckload.yield_type.is_(None),
+        Truckload.trucker_id == current_user.id
     ).all()
     
     return render_template('trucker/truckload.html', current_user=current_user, truckloads=truckloads)
